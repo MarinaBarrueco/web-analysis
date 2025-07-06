@@ -1,0 +1,988 @@
+<!DOCTYPE html>
+<html>
+<head><title>Gibbs Cluster Report</title>
+<style type="text/css">
+body { 
+font-family: Arial, Helvetica, sans-serif;
+color: #000000;background-color: #FFFFFF;
+font-size: 15px; border: 0;
+margin: 0;
+padding: 0;
+}
+div.header {
+color: #FFFFFF;
+background-color: #FF3399;
+font-size: 200%;
+font-weight: bold;
+border:0;
+margin:0;
+padding: 0.5em;
+}
+div.footer {
+color: #FFFFFF;
+background-color: #FF3399;
+font-size: 130%;
+font-weight: bold;
+border:0;
+margin:0;
+padding: 0.5em;
+}
+div.main {
+margin-left: 2em;
+margin-right: 2em;
+}
+a:link {
+color: #FF3399
+}
+a:visited {
+color: #FF3399
+}
+a:hover {
+color: #642EFE
+}
+a:active {
+color: #642EFE
+}
+</style>
+</head>
+<body><div class="header"> GibbsCluster report</div>
+<div class="main">
+<br><b>Version:</b> 2.0
+<br><b>Run ID:</b> 44351
+<br><b>Run name:</b> gibbs_44351
+<br><b>Platform:</b> Darwin arm64
+<br><br><br>Read <b>200 unique sequences</b> from file<br><br>
+<b>Settings:</b><br><small>
+<b>No shift moves, cluster moves at every iteration</b><br>
+Number of clusters: 1 - 4<br>
+Motif length: 9<br>
+Initial MC temperture: 1.5<br>
+Number of temperature steps: 20<br>
+Number of iterations x Sequence x Tstep: 10<br>
+Max insertion length: 1<br>
+Max deletion length: 5<br>
+Interval between Indel moves: 10<br>
+Number of initial seeds: 3<br>
+Penalty lambda: 0.8<br>
+Weight on small clusters: 5<br>
+Sequence weighting type: 0<br>
+Background model: Uniprot pre-calculated<br>
+Use trash cluster to remove outliers: 0<br>
+</small>
+</font><hr><table width="100%" border="0">
+<tr valign="top"><td width:50%;text-align:center>
+<div style="padding-left: 2em">
+<b>KLD vs. Number of clusters with &#955; = 0.8</b></div>
+</td> <td width:50%;text-align:center>
+<div style="padding-left: 2em"><b>Identified 2 sequence motifs</b>
+</div>
+</td></tr><tr valign="middle"><td width:50%;text-align:center>
+<img src="./images/gibbs_44351.gibbs.KLDvsCluster.barplot.png" alt="" title="Barplot of combined Kullbach Leibler Distance versus the Number of Partitions applied to the dataset. " width="400" />
+<br><span style="padding-left:5em"><font size="2">View the <a href="./images/gibbs_44351.gibbs.KLDvsCluster.barplot.png" TARGET='_blank'>barplot</a> in full size</font></span>
+<br></td> <td width:50%;text-align:left;vertical-align:middle>
+</td></tr></table>
+<br>
+<hr>
+<table width="100%" border='0'>
+<tr valign="top"><td colspan='2'>
+<h3>RESULTS for 1 CLUSTERS</h3>
+</td></tr><tr valign='top'> <td> <font face="COURIER">
+ Final Average KLD: <b>9.658308
+</b></font><br><br>
+<table align='left'>
+<font face="COURIER"><tr valign='top'> <th>&nbsp;Group&nbsp;</th> <th>&nbsp;Size&nbsp;</th> <th>&nbsp;KLD&nbsp;</th> <th>&nbsp;Seq2Logo&nbsp;</th> <th>&nbsp;Matrix&nbsp;</th> </tr>
+<tr valign='top'> <td>&nbsp;1&nbsp;</td> <td>&nbsp;200&nbsp;</td> <td>&nbsp;9.658&nbsp;</td>
+<td><div style='display: inline;'><form style='display:inline; margin:0;' action='http://www.cbs.dtu.dk/biotools/Seq2Logo/index.php' method='POST' target='_blank'> <input type='hidden' name='INPASTE' value='HLYSEVKEV
+FVDDYTVRV
+TLIRVPPQV
+LIDVGTGYY
+NLIANVLYL
+ILGIQPPSV
+LVDNSILQY
+TLDSDQVGY
+FLGDG-MGV
+RLAEGLMKV
+YLDEIDQAL
+LADFGFGNF
+ASEPSQLSY
+YLAERIPTL
+VVEDKVEGY
+LMEDEMEYY
+TFNEGSLIY
+FLLPKFHGV
+YLLGGPLEV
+KTDEKLTFY
+TSRPGDSMY
+FLWERPTLL
+SLDDFQAWL
+KLQLVEMPL
+LSDTKYLEI
+HIAEVSQEV
+YLEEDVYQL
+ALQEKLQYL
+FSDDSKLEY
+TVDVLKEAY
+HLEEGDLEY
+TSDFETIMK
+ATDRFRSLY
+TMADQIVTV
+GTVYEDLRY
+YLKELLNLA
+LTETIYNYY
+TAESHVSRY
+ALDGVVSQA
+TLGSFSLRV
+YVDDTQFGF
+ILNEIVNFV
+FTASGDLHY
+ITDYLIEEV
+YLKEILEQL
+LTDLKSSVY
+YLAKLIFQM
+LVEKSQLGY
+KLFSGVLML
+ETDPVENTY
+VVDNLQHLY
+LMDKSSTIY
+KQVSDLISV
+HLLNESPML
+LLWPGALLV
+TIMKKVTSV
+DLDLESPLY
+KLLDGPPGV
+KLQNLNIFL
+LMNPNIASV
+ALNNLLHSL
+ALMPVLNQV
+HTDHHMFFY
+KLNPQQFEV
+FMYDRPLRL
+KLGDLFFRV
+MLDEILLQL
+MLDWASTLY
+TLIDSLDTL
+TIDLGAAHY
+FIEALLPHV
+ALYASRLYL
+LLDRFLATV
+GLSSLSIHL
+YTDNLVRVW
+LTDIKLGKY
+LLESKMFNY
+TTDFEDDEF
+ATAAALTYY
+KTDPLTQLY
+LTEKTGTQY
+FLLINVGLI
+SSEVTSQLY
+TSEPKPLYY
+FLNGGILNY
+SSEYHYVFY
+YLLPQPPSL
+VLEINSLKY
+SLDGKAIKV
+ETEVSFLDY
+SLYGGTITI
+TTEFLYNLY
+FTD-KAASY
+FTDTEGLPY
+ALYSAEHGL
+RADDADEFY
+VLGEGVPIL
+VLERNPWWY
+LQDPFHGVY
+VADDPNDPY
+YTDPAYSEL
+TTEAVHYLY
+FLDPRPLTV
+AMFGKLMTI
+NSDVSLLNY
+FIEERLLMY
+KLQIVEMPL
+SLLESVQKL
+LSESKFLSY
+FLLEKGYEV
+ASDPNSSIF
+MSEERTLLY
+SLAESLDQA
+LLEDIPDKV
+QTENSLHMY
+YILRELPKV
+ELFSSPPAV
+NLLKLIAEV
+SLLDIDPLI
+ATDIFSYLV
+MVESLVWGY
+YSDSAVLKL
+SLFGGSVKL
+TLEGTPVFV
+ETVPRSGEY
+LSDIGSIRY
+YLWNTVSKL
+LLLDMQNRL
+TADGKTYYY
+LLLPDYYLV
+LLEPVPVSV
+FLLWATAEA
+FTEVLSPMY
+MLEDRDLFV
+ITSTRSLNY
+FTEDSLLRH
+NSELGSTRY
+AVYEGHVSV
+TSEQNPPYY
+YADINSDRY
+TLEESMLRY
+NTDPKRAVY
+ALARTALAL
+FLLFINHRL
+ILLDRLLYL
+VLIKDLFHI
+ATDVLHAWY
+TSDFIPLVY
+KLLCGLLRL
+ALPEIFTEL
+TLETRSYKY
+NTDFYQTSY
+VLQGKLAEV
+LLLKYTEKL
+LTEDLQYGY
+YLDGRLPLY
+KVASLLHQV
+VIDEKSGRY
+FSDFGLHSK
+YTDDGTRVY
+ALLEGDMSL
+FLNQVLAEI
+FMDKLGENL
+FQDQLHQLY
+QSERQLLLY
+LLDSYYEQY
+SSDEEFALY
+LLLPDYYLV
+ISYGPDWFY
+LMELTMLDY
+YINSFLDGY
+KLFIGGLNV
+PTESQSLLY
+LLLAAPAQA
+ILNPLLTLL
+ALYTGDPNL
+YLAEKYWDV
+ATNPESVFY
+YIDAQFENY
+VLDRLTFDY
+YVDEYRNDY
+VLTEHVAAA
+ATDIFSYLV
+VLFGLLREV
+YVDEELPDY
+GLLGYLHFV
+NTDWIVMEY
+FLNDIFERI
+ALLETMFGV
+YSQSYNSQY
+YADHLDWHY
+GLDNINVFL
+AMNGHTAAV
+FLTRIISQL
+TLIELGLTV
+SLLEGPPAI
+TLQEFLERI
+YLEEYKFQV
+VADVLVDGY
+FVDERPEEV
+'/> <input type='submit' value='LOGO' /></form></div>
+<td>&nbsp; <a href="./matrices/gibbs.1of1.mat" TARGET='_blank'>Mat_1.1</a> &nbsp;</td>
+ </td>
+</tr></font><tr valign='top'> <td colspan='4'><br>Raw <a href="./res/gibbs.1g.out" TARGET='_blank'>Clustering Report</a>
+<br>Formatted <a href="./res/gibbs.1g.ds.out" TARGET='_blank'>Clustering Solution</a>
+<br>Clustered <a href="./cores/gibbs.1g.cores" TARGET='_blank'>Alignment Cores</a></td></tr>
+</table>
+</td> <td width:50%;text-align:left;vertical_align:middle>
+</td></tr>
+<tr><td colspan="2"></td></tr>
+<tr valign="top"><td colspan='2'>
+<h3>RESULTS for 2 CLUSTERS</h3>
+</td></tr><tr valign='top'> <td> <font face="COURIER">
+ Final Average KLD: <b>11.677912
+</b></font><br><br>
+<table align='left'>
+<font face="COURIER"><tr valign='top'> <th>&nbsp;Group&nbsp;</th> <th>&nbsp;Size&nbsp;</th> <th>&nbsp;KLD&nbsp;</th> <th>&nbsp;Seq2Logo&nbsp;</th> <th>&nbsp;Matrix&nbsp;</th> </tr>
+<tr valign='top'> <td>&nbsp;1&nbsp;</td> <td>&nbsp;99&nbsp;</td> <td>&nbsp;13.483&nbsp;</td>
+<td><div style='display: inline;'><form style='display:inline; margin:0;' action='http://www.cbs.dtu.dk/biotools/Seq2Logo/index.php' method='POST' target='_blank'> <input type='hidden' name='INPASTE' value='LTEDLQYGY
+VLEPNGWWY
+FQDQLHQLY
+TAAALTYLY
+FTEDSLLRH
+LVDNSELQY
+LVEKSQLGY
+LTDIKLGKY
+ETEVSFLDY
+TSEPPFLYY
+FTSWGDLHY
+ISYGPDWKY
+VLEINSLKY
+VADDPNDPY
+ASDPNSSIF
+FSDFLGLHK
+YINASFLGY
+TIDLGAAHY
+TLEESMLRY
+ASEPSQLSY
+NTDWIVMEY
+ATDIFSYLV
+LMEDEMEYY
+RADDADEGY
+SSDEEFALY
+FTEVLSNMY
+YTDPPAYSE
+ETDPVENTY
+SSEYHYVGY
+NTDFYQTSY
+MSEERTLLY
+HLEEKDLEY
+LTDLKSSVY
+LADFGFGNF
+LMELTMLDY
+LIDVGTGYY
+TSRPLDSMY
+FTD-KAASY
+ETVPRSEVY
+VLDRLTFDY
+YADHLDWHY
+TLDSDQVGY
+YSQSPAYNY
+YIDAQFENY
+TSDFETIMK
+FTDTEGLPY
+LSDTKYLMI
+TVDVLKEAY
+TTEFLYNLY
+VADVLVDGY
+YVDEYRNDY
+TTEAVHYLY
+YADVNSDRY
+ATNPESKVY
+TSDFPRLVY
+TSENPPYSY
+YVDDTQFGF
+ATDVLHAVY
+VVEDKVEGY
+QTENSHMGY
+ITDYLIEEV
+YTDFGTRVY
+YSDSAVLKL
+YTDNLVRVW
+ITSTRSLNY
+LQDPFHGVY
+LMDKSSTIY
+KTDPLTQLY
+PTDTRSYKY
+TAEASHSRY
+VIDEKSGRY
+VVDNLQHLY
+FIEERLLMY
+LTEVNKTGY
+LLDNSYYEY
+QSERQLLLY
+LSEYSFLSY
+ATDRFRSLY
+LSDIGSIRY
+PTEISSLLY
+NSDVSLLNY
+TTDFEDDEF
+TFNEGSLIY
+HTDHHMFDY
+FSDDSKLEY
+NSELGSERY
+NTDPKRAVY
+MVESLVWGY
+GTVYEDLRY
+TADGKTYYY
+ATDFSYLVE
+SSEVTSQLY
+LTETIYNYY
+MLDWASTLY
+LLESKMFNY
+KTDMEKLTY
+YVDEELPDY
+YLDGRLELY
+LLESPKSLY
+'/> <input type='submit' value='LOGO' /></form></div>
+<td>&nbsp; <a href="./matrices/gibbs.1of2.mat" TARGET='_blank'>Mat_1.2</a> &nbsp;</td>
+ </td>
+</tr><tr valign='top'> <td>&nbsp;2&nbsp;</td> <td>&nbsp;101&nbsp;</td> <td>&nbsp;9.909&nbsp;</td>
+<td><div style='display: inline;'><form style='display:inline; margin:0;' action='http://www.cbs.dtu.dk/biotools/Seq2Logo/index.php' method='POST' target='_blank'> <input type='hidden' name='INPASTE' value='FLSLINVGL
+AMFGKLMTI
+VLFGLLREV
+FLLFINHRL
+FLNDIFERI
+LLLPDYYLV
+KLLEVPVSV
+VLIKDLFHI
+ALLEGDMSL
+KLQLVEMPL
+NLIANVLYL
+KLFSGLMDL
+LLLAAPAQA
+VLQGKLAEV
+NLLKLIAEV
+ALYASRLYL
+HIAEVSQEV
+KQVSDLISV
+YILRELPKV
+YLAERIPTL
+ALYTGDPNL
+FMYDRPLRL
+KLLDGPPGV
+GILGIPPSV
+KLLCGLLRL
+YLFDEIDQL
+ILNPLLTLL
+KLGDLFFRV
+ALMPVLNQV
+TLQEFLERI
+ALLETMFGV
+FLLEKGYEV
+FLLWATAEA
+LLDRFLATV
+ALPEIFTEL
+TIMKKVTSV
+AVYEGHVSV
+TLIELGLTV
+SLAESLDQA
+YLAKLIFQM
+SLDDFQAWL
+YLEEYKFQV
+VLGEGVPIL
+TLGSFSLRV
+ALADGVVQA
+ILLDRLLYL
+KLQIVEMPL
+SLLESVQKL
+GLDNINVFL
+LLLPDYYLV
+TMADQIVTV
+YLKEILEQL
+ALARTALAL
+VLTEHVAAA
+FLNQVLAEI
+LLYEDIPKV
+KVASLLHQV
+AMNGHTAAV
+KLNPQQFEV
+RLAEGLMKV
+SLLDIDPLI
+FLLPKFHGV
+TLIDSLDTL
+SLFGGSVKL
+FLTRIISQL
+YLLPQPPSL
+KLFIGGLNV
+FLGDG-MGV
+FVDDYTVRV
+ILNEIVNFV
+ELFSSPPAV
+TLIRVPPQV
+SLLEGPPAI
+GLLGYLHFV
+KLQNLNIFL
+ALQEKLQYL
+YLLGGPLEV
+MLDEILLQL
+FLDPRPLTV
+ALYSAEHGL
+YLEEDVYQL
+LMNPNIASV
+HLYSEVKEV
+YLWNTVSKL
+LLLDMQNRL
+FLWERPTLL
+LLWPGAALV
+TLEGTPVFV
+LLLKYTEKL
+SLYGGTITI
+HLLNESPML
+SLDGKAIKV
+ALNNLLHSL
+YLAEKYEWV
+FVDERPEEV
+YLKELLNLA
+GLSSLSIHL
+FIEALLPHV
+RMLEDDLFV
+FLNGGLNYM
+FMDKLGENL
+'/> <input type='submit' value='LOGO' /></form></div>
+<td>&nbsp; <a href="./matrices/gibbs.2of2.mat" TARGET='_blank'>Mat_2.2</a> &nbsp;</td>
+ </td>
+</tr></font><tr valign='top'> <td colspan='4'><br>Raw <a href="./res/gibbs.2g.out" TARGET='_blank'>Clustering Report</a>
+<br>Formatted <a href="./res/gibbs.2g.ds.out" TARGET='_blank'>Clustering Solution</a>
+<br>Clustered <a href="./cores/gibbs.2g.cores" TARGET='_blank'>Alignment Cores</a></td></tr>
+</table>
+</td> <td width:50%;text-align:left;vertical_align:middle>
+</td></tr>
+<tr><td colspan="2"></td></tr>
+<tr valign="top"><td colspan='2'>
+<h3>RESULTS for 3 CLUSTERS</h3>
+</td></tr><tr valign='top'> <td> <font face="COURIER">
+ Final Average KLD: <b>10.436193
+</b></font><br><br>
+<table align='left'>
+<font face="COURIER"><tr valign='top'> <th>&nbsp;Group&nbsp;</th> <th>&nbsp;Size&nbsp;</th> <th>&nbsp;KLD&nbsp;</th> <th>&nbsp;Seq2Logo&nbsp;</th> <th>&nbsp;Matrix&nbsp;</th> </tr>
+<tr valign='top'> <td>&nbsp;1&nbsp;</td> <td>&nbsp;96&nbsp;</td> <td>&nbsp;13.077&nbsp;</td>
+<td><div style='display: inline;'><form style='display:inline; margin:0;' action='http://www.cbs.dtu.dk/biotools/Seq2Logo/index.php' method='POST' target='_blank'> <input type='hidden' name='INPASTE' value='ETVPRSEVY
+VIDEKSGRY
+ASDPNSSIF
+KTDPLTQLY
+ASEPSQLSY
+YIDAQFENY
+YINASFLDY
+FSDFLGLHK
+LSDTKYLMI
+ATDVLHAVY
+FTASGDLHY
+YSDSAVLKL
+LTETIYNYY
+SSEYHYVFY
+YADVNSDRY
+LTDLKSSVY
+FSDDSKLEY
+LMDKSSTIY
+VVDNLQHLY
+QSERQLLLY
+YTDDGTRVY
+YADHLDWHY
+LMELTMLDY
+LSDIGSGRY
+TLDSDQVGY
+ETEVSFLDY
+PTEISSLLY
+LTDIKLGKY
+TAEASHSRY
+TADGKTYYY
+TLEESMLRY
+FTDTEGLPY
+LQDPFHGVY
+VADDPNDPY
+LMEDEMEYY
+FIEERLLMY
+LSESKFLSY
+MSEERTLLY
+QTENSHMGY
+MLDASGTLY
+MVESLVWGY
+HTDHHMFFY
+VADVLVDGY
+ATDIFSYLV
+FTEVLSNMY
+FTEDSLLRH
+ATNPESVFY
+SSDEEFALY
+LIDVGTGYY
+NSELGSERY
+PTDTRSYKY
+NSDVSLLNY
+YSQSPAYNY
+HLEEKDLEY
+TSENPPYSY
+LLDNSYYEY
+ISYGPDWFY
+ITSTRSLNY
+FQDQLHQLY
+SSEVTSQLY
+LLESKMFNY
+LADFGFGNF
+ATDFSYLVE
+TAAALTYLY
+LTEDLQYGY
+YVDDTQFVF
+TSEPPFLYY
+LVDNSELQY
+VLEPNGWWY
+TTEAVHYLY
+YTDPPAYSE
+TSDFETIMK
+YTDNLVRVW
+ATDRFRSLY
+TSDFPRLVY
+TVDVLKEAY
+TSRPLDSMY
+VLEINSLKY
+YVDEELPDY
+TTDFEDDEF
+NTDPKRAVY
+RADDADEFY
+FTD-KAASY
+NTDLIVMEY
+ETDPVENTY
+LVEKSQLGY
+YVDEYRNDY
+NTDFYQTSY
+LTEVNKTGY
+VVEDKVEGY
+KTDEKLTFY
+TTEFLYNLY
+TIDLGAAHY
+GTVYEDLRY
+VLDRLTFDY
+TFNEGSLIY
+'/> <input type='submit' value='LOGO' /></form></div>
+<td>&nbsp; <a href="./matrices/gibbs.1of3.mat" TARGET='_blank'>Mat_1.3</a> &nbsp;</td>
+ </td>
+</tr><tr valign='top'> <td>&nbsp;2&nbsp;</td> <td>&nbsp;49&nbsp;</td> <td>&nbsp;8.427&nbsp;</td>
+<td><div style='display: inline;'><form style='display:inline; margin:0;' action='http://www.cbs.dtu.dk/biotools/Seq2Logo/index.php' method='POST' target='_blank'> <input type='hidden' name='INPASTE' value='SLLDIDPLI
+GILGQPPSV
+ELFSSPPAV
+KQVSDLISV
+ALARTALAL
+AVYEGHVSV
+ALYTGDPNL
+YLLGGPLEV
+SLLEGPPAI
+ALYASRLYL
+YLAERIPTL
+FMYDRPLRL
+LLYEDIPKV
+VLGEGVPIL
+ALLEGDMSL
+YLLQPPPSL
+AMFGKLMTI
+TMADQIVTV
+YLWNTVSKL
+HLLNESPML
+KLLDGPPGV
+ALADGVVSA
+RLAEGLMKV
+SLFGGSVKL
+TLIDSLDTL
+FLWERPTLL
+KLFIGGLNV
+NLIANVLYL
+ILLDRLLYL
+TLGSSGLRV
+ALLETMFGV
+TIMKKVTSV
+TLEGTPVFV
+SLDGKAIKV
+FLGDG-MGV
+TLIRVPPQV
+LLWGAALLV
+HLYSEVKEV
+SLYGGTITI
+TLIEEGLTV
+KLFSGVLML
+YILRELPKV
+ALYSAEHGL
+SLLESVQKL
+KLLEPVPSV
+RMLERDLFV
+SLAESLDQA
+DLLESPKSL
+LLLAAPAQA
+'/> <input type='submit' value='LOGO' /></form></div>
+<td>&nbsp; <a href="./matrices/gibbs.2of3.mat" TARGET='_blank'>Mat_2.3</a> &nbsp;</td>
+ </td>
+</tr><tr valign='top'> <td>&nbsp;3&nbsp;</td> <td>&nbsp;55&nbsp;</td> <td>&nbsp;7.618&nbsp;</td>
+<td><div style='display: inline;'><form style='display:inline; margin:0;' action='http://www.cbs.dtu.dk/biotools/Seq2Logo/index.php' method='POST' target='_blank'> <input type='hidden' name='INPASTE' value='ALQEKLQYL
+LLLDMQNRL
+KLQLVEMPL
+FLLWATAEA
+YLEEDVYQL
+YLAEKYEWV
+HIAEVSQEV
+AMNGHTAAV
+FLLFINHRL
+SLDDFQAWL
+GLDNINVFL
+YLKELLNLA
+VLFGLLREV
+LMNPNIASV
+YLKEILEQL
+LLLPDYYLV
+LLLKYTEKL
+TLQEFLERI
+NLLKLIAEV
+FVDDYTVRV
+ILNEIVNFV
+FLNQVLAEI
+VLQGKLAEV
+ALNNLLHSL
+FVDERPEEV
+FLDPRLTVV
+YLEEYKFQV
+YLAKLIFQM
+FLLEKGYEV
+ALPEIFTEL
+KVASLLHQV
+FLNDIFERI
+LLDRFLATV
+GLSSLSIHL
+MLDEILLQL
+FLTRIISQL
+ILNPLLTLL
+FIEALLPHV
+FMDKLGENL
+KLQNLNIFL
+KLGDLFFRV
+KLNPQQFEV
+ALMPVLNQV
+GLLGYLHFV
+VLTEHVAAA
+FLLPKFHGV
+KLQIVEMPL
+FLNGILNYM
+VLIKDLFHI
+LLLPDYYLV
+ITDYLIEEV
+YLDEIDQAL
+LLCGLLAEL
+FLSLINVGL
+YLDGRLEPL
+'/> <input type='submit' value='LOGO' /></form></div>
+<td>&nbsp; <a href="./matrices/gibbs.3of3.mat" TARGET='_blank'>Mat_3.3</a> &nbsp;</td>
+ </td>
+</tr></font><tr valign='top'> <td colspan='4'><br>Raw <a href="./res/gibbs.3g.out" TARGET='_blank'>Clustering Report</a>
+<br>Formatted <a href="./res/gibbs.3g.ds.out" TARGET='_blank'>Clustering Solution</a>
+<br>Clustered <a href="./cores/gibbs.3g.cores" TARGET='_blank'>Alignment Cores</a></td></tr>
+</table>
+</td> <td width:50%;text-align:left;vertical_align:middle>
+</td></tr>
+<tr><td colspan="2"></td></tr>
+<tr valign="top"><td colspan='2'>
+<h3>RESULTS for 4 CLUSTERS</h3>
+</td></tr><tr valign='top'> <td> <font face="COURIER">
+ Final Average KLD: <b>9.368982
+</b></font><br><br>
+<table align='left'>
+<font face="COURIER"><tr valign='top'> <th>&nbsp;Group&nbsp;</th> <th>&nbsp;Size&nbsp;</th> <th>&nbsp;KLD&nbsp;</th> <th>&nbsp;Seq2Logo&nbsp;</th> <th>&nbsp;Matrix&nbsp;</th> </tr>
+<tr valign='top'> <td>&nbsp;1&nbsp;</td> <td>&nbsp;45&nbsp;</td> <td>&nbsp;8.395&nbsp;</td>
+<td><div style='display: inline;'><form style='display:inline; margin:0;' action='http://www.cbs.dtu.dk/biotools/Seq2Logo/index.php' method='POST' target='_blank'> <input type='hidden' name='INPASTE' value='ALYTGDPNL
+SLFGGSVKL
+KLLEPVPSV
+SLLEGPPAI
+SLLESVQKL
+ELFSSPPAV
+NLIANVLYL
+ALLEGDMSL
+ALARTALAL
+KLFIGGLNV
+HLLNESPML
+RLAEGLMKV
+ALYASRLYL
+YLLPQPPSL
+YILRELPKV
+SLYGGTITI
+VLGEGVPIL
+TLIRVPPQV
+YLWNTVSKL
+AMFGKLMTI
+KLLDGPPGV
+YLAERIPTL
+LLWPGALLV
+SLLDIDPLI
+YLLGGPLEV
+TLIEEGLTV
+KLFSGVLML
+TLGSSGLRV
+KQVSDLISV
+AVYEGHVSV
+GILGQPPSV
+ALADGVVSA
+LLYEDIPKV
+FLGDG-MGV
+ILLDRLLYL
+HLYSEVKEV
+FMYDRPLRL
+TLEGTPVFV
+FLWERPTLL
+SLDGKAIKV
+TLIDSLDTL
+TMADQIVTV
+ALLETMFGV
+TIMKKVTSV
+RMLERDLFV
+'/> <input type='submit' value='LOGO' /></form></div>
+<td>&nbsp; <a href="./matrices/gibbs.1of4.mat" TARGET='_blank'>Mat_1.4</a> &nbsp;</td>
+ </td>
+</tr><tr valign='top'> <td>&nbsp;2&nbsp;</td> <td>&nbsp;23&nbsp;</td> <td>&nbsp;7.545&nbsp;</td>
+<td><div style='display: inline;'><form style='display:inline; margin:0;' action='http://www.cbs.dtu.dk/biotools/Seq2Logo/index.php' method='POST' target='_blank'> <input type='hidden' name='INPASTE' value='VLERNGWWY
+KLQIVEMPL
+LLESAKMFY
+LTEDLQYGY
+VVDNLQHLY
+VADHLDWHY
+VADVLVDGY
+ISYGPDWFY
+ALYSAEHGL
+VADDPNDPY
+KLQLVEMPL
+TLDSDQVGY
+KLQNLNIFL
+YVDDTQFGF
+VVEDKVEGY
+MVESLGWGY
+FLSLINVGL
+VLDRLTFDY
+SLDDFQAWL
+RADDAEFGY
+GLDNINVFL
+LVEKSQLGY
+GLSSLSIHL
+'/> <input type='submit' value='LOGO' /></form></div>
+<td>&nbsp; <a href="./matrices/gibbs.2of4.mat" TARGET='_blank'>Mat_2.4</a> &nbsp;</td>
+ </td>
+</tr><tr valign='top'> <td>&nbsp;3&nbsp;</td> <td>&nbsp;82&nbsp;</td> <td>&nbsp;11.288&nbsp;</td>
+<td><div style='display: inline;'><form style='display:inline; margin:0;' action='http://www.cbs.dtu.dk/biotools/Seq2Logo/index.php' method='POST' target='_blank'> <input type='hidden' name='INPASTE' value='SSDEEFALY
+SSEYHYGFY
+ETDPVENTY
+FTDKAAS-Y
+YINASFLDY
+NTDFYQTSY
+PTEISSLLY
+YTDPAYSEL
+LMDKSSTIY
+FTSWGDLHY
+YVDEYRNDY
+ATDRFRSLY
+LSEYSFLSY
+ETVPRSGEY
+KTDPVRLLY
+FIEERLLMY
+ATDIFSYLV
+FTEVLSNMY
+LTDIKLGKY
+DLDLESSLY
+NSELGSERY
+LLDNSYYEY
+ASEPSQLSY
+YADVNSDRY
+LIDVGTGYY
+YIDAQFENY
+ITSTRSLNY
+LSDIGSGRY
+GTVYEDLRY
+TSRPGDSMY
+NSDVSLLNY
+HTDHMFFDY
+FSDFLGLHK
+MSEERTLLY
+YTDFGTRVY
+FTDTEGLPY
+NTDWIVMEY
+PTDLESYKY
+QTENSLHMY
+KTDMEKLFY
+NTDPKRAVY
+TLEESMLRY
+ATNPESKVY
+TTDFEDDEF
+ETEVSFLDY
+ATDVLHAVY
+SSEVTSQLY
+ASDPNSSIF
+FSDDSKLEY
+LSDTKYLMI
+LTDLKSSVY
+QSERQLLLY
+FTEDSLLRH
+TTEFLYNLY
+TSDFIRLVY
+TSEPKFLYY
+LQDPFHGVY
+LADFGFGNF
+ATDFSYLVE
+TAEASHSRY
+TTEAVHYLY
+TIDLGAAHY
+TSDFETIMK
+FQDQLHQLY
+HLEEGDLEY
+YVDEELPDY
+TFNEGSLIY
+YTDNLVRVW
+LVDNSELQY
+LTETIYNYY
+LTEVNKTQY
+MLDWASGLY
+ATAAAYGLY
+LMELTMLDY
+TADGKTYYY
+TSEQNPYSY
+VLEINSLKY
+VIDEKSGRY
+YSDSAVLKL
+SQSPAYSQY
+TVDVLKEAY
+LMDEMKEYY
+'/> <input type='submit' value='LOGO' /></form></div>
+<td>&nbsp; <a href="./matrices/gibbs.3of4.mat" TARGET='_blank'>Mat_3.4</a> &nbsp;</td>
+ </td>
+</tr><tr valign='top'> <td>&nbsp;4&nbsp;</td> <td>&nbsp;50&nbsp;</td> <td>&nbsp;7.938&nbsp;</td>
+<td><div style='display: inline;'><form style='display:inline; margin:0;' action='http://www.cbs.dtu.dk/biotools/Seq2Logo/index.php' method='POST' target='_blank'> <input type='hidden' name='INPASTE' value='LLLPDYYLV
+FLNDIFERI
+LLLKYTEKL
+TLQEFLERI
+FIEALLPHV
+LLCGLLAEL
+KVASLLHQV
+FLLEKGYEV
+MLDEILLQL
+FVDERPEEV
+YLEEDVYQL
+FMDKLGENL
+LLLAAPAQA
+ILNPLLTLL
+ITDYLIEEV
+FLNGILNYM
+KLNPQQFEV
+FLTRIISQL
+KLGDLFFRV
+LLLPDYYLV
+ALNNLLHSL
+ILNEIVNFV
+VLQGKLAEV
+FLLPKFHGV
+NLLKLIAEV
+YLKELLNLA
+LLLDMQNRL
+VLFGLLREV
+FLNQVLAEI
+SLAESLDQA
+ALMPVLNQV
+YLEEYKFQV
+GLLGYLHFV
+LLDRFLATV
+VLTEHVAAA
+AMNGHTAAV
+ALPEIFTEL
+YLKEILEQL
+FLLWATAEA
+FVDDYTVRV
+VLIKDLFHI
+LMNPNIASV
+YLAKLIFQM
+FLLFINHRL
+HIAEVSQEV
+ALQEKLQYL
+YLAEKYEDV
+FLDPRLTVV
+YLDGRLEPL
+YLDEIDQAL
+'/> <input type='submit' value='LOGO' /></form></div>
+<td>&nbsp; <a href="./matrices/gibbs.4of4.mat" TARGET='_blank'>Mat_4.4</a> &nbsp;</td>
+ </td>
+</tr></font><tr valign='top'> <td colspan='4'><br>Raw <a href="./res/gibbs.4g.out" TARGET='_blank'>Clustering Report</a>
+<br>Formatted <a href="./res/gibbs.4g.ds.out" TARGET='_blank'>Clustering Solution</a>
+<br>Clustered <a href="./cores/gibbs.4g.cores" TARGET='_blank'>Alignment Cores</a></td></tr>
+</table>
+</td> <td width:50%;text-align:left;vertical_align:middle>
+</td></tr>
+<tr><td colspan="2"></td></tr>
+</table>
+<br><hr><br>Explain the <a href="http://www.cbs.dtu.dk/services/GibbsCluster/output.php" target="_blank">output</a>
+<br><br>
+Read the <a href="http://www.cbs.dtu.dk/services/GibbsCluster/instructions.php" target="_blank">instructions</a></div><br><br>
+<br><div class="footer"> Made with GibbsCluster version 2.0</div>
+</body></html>

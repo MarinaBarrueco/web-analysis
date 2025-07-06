@@ -1,0 +1,333 @@
+# /Users/marinabarrueco/Downloads/gibbscluster-2.0/bin/gibbs_cluster_1.2.2_DB.Darwin_x86_64 -mhc1 -l 9 -g 3 -ts 1.5 -blf /Users/marinabarrueco/Downloads/gibbscluster-2.0/data/blosum%i.freq_rownorm -blm 62 -base 0 -bg 1 -i 10 -s 2 -nt 20 -fr 20 -fs 100 -wlc 200 -swt 0 -lambda 0.8 -dlen 5 -ilen 1 -findels 10 -sigma 5 /Users/marinabarrueco/Downloads/gibbscluster-2.0/test/gibbs_43881/data/pepdata.txt
+# Thu Jan 30 18:17:27 2025
+# User: marinabarrueco
+# PWD : /Users/marinabarrueco/Downloads/gibbscluster-2.0/test
+# Host: Darwin MacBook-Air-de-Marina.local 23.6.0 x86_64
+# -mhc1    1                    Use peptides of fixed length, no window shift
+# -l       9                    Motif length
+# -g       3                    Number of initial clusters
+# -ts      1.500000             Start temperature
+# -blf     /Users/marinabarrueco/Downloads/gibbscluster-2.0/data/blosum%i.freq_rownorm Real value blosum matrix filename
+# -blm     62                   Blosum matrix number
+# -base    0.000000             Baseline value to discard to trash
+# -bg      1                    [0] Flat (0.05) [1] Precalculated [2] From data
+# -i       10                   Number of iterations per train example
+# -s       2                    Seed [-1] Default, [0] Time [>0] Specific seed
+# -nt      20                   Number of temperature steps
+# -fr      20                   Interval between Single sequence moves (if -mhc1 == 1)
+# -fs      100                  Interval between Phase shift moves
+# -wlc     200.000000           Weigth on low count
+# -swt     0                    [0] 1/ns [1] Clustering [2] No sequence weighting
+# -lambda  0.800000             Penalty factor for overlapping clusters
+# -dlen    5                    Max length of deletions
+# -ilen    1                    Max length of insertions
+# -findels 10                   Interval between Indel moves
+# -sigma   5.000000             Weight on blosum for small cluster confidence
+# Command line parameters set to:
+#	[-l int]             9                    Motif length
+#	[-g int]             3                    Number of initial clusters
+#	[-trash]             0                    Use trash cluster to remove outliers
+#	[-i int]             10                   Number of iterations per train example
+#	[-s int]             2                    Seed [-1] Default, [0] Time [>0] Specific seed
+#	[-f filename]        0                    File for frequency matrices
+#	[-m filename]        0                    File for log-odds matrices
+#	[-a filename]        aln.txt              File for multiple alignments
+#	[-pc]                0                    Print core of alignment
+#	[-c filename]        core.txt             File for core
+#	[-alp string]        ARNDCQEGHILKMFPSTWYV Amino acid alphabet
+#	[-bg int]            1                    [0] Flat (0.05) [1] Precalculated [2] From data
+#	[-base float]        0.000000             Baseline value to discard to trash
+#	[-mhc1]              1                    Use peptides of fixed length, no window shift
+#	[-ts float]          1.500000             Start temperature
+#	[-te float]          0.000010             Final temperature
+#	[-nt int]            20                   Number of temperature steps
+#	[-ms int]            3                    Max phase shift distance
+#	[-fs int]            100                  Interval between Phase shift moves
+#	[-findels int]       10                   Interval between Indel moves
+#	[-fr int]            20                   Interval between Single sequence moves (if -mhc1 == 1)
+#	[-lambda float]      0.800000             Penalty factor for overlapping clusters
+#	[-sigma float]       5.000000             Weight on blosum for small cluster confidence
+#	[-noph]              0                    Exclude phase shift move
+#	[-r float]           5.000000             Scale factor for phase shift moves
+#	[-wlc float]         200.000000           Weigth on low count
+#	[-blf filename]      /Users/marinabarrueco/Downloads/gibbscluster-2.0/data/blosum%i.freq_rownorm Real value blosum matrix filename
+#	[-blm int]           62                   Blosum matrix number
+#	[-cX int]            1                    [0] Count X as A, [1] Exclude X from count
+#	[-v]                 0                    Verbose mode
+#	[-debug]             0                    Debug model
+#	[-cthr float]        0.620000             Clustering threshold for sequence weighting
+#	[-swt int]           0                    [0] 1/ns [1] Clustering [2] No sequence weighting
+#	[-w string]          1,3,1,1,1,1,1,1,3    Weigths on positions
+#	[-iw]                0                    Include weights on positions
+#	[-noc float]         0.000000             Log-odds score assignment to no count elements
+#	[-p1a]               0                    Allow only Hydrophobic AA at P1
+#	[-p1l filename]      ILVMFYW              Allowed letters at P1 [Only with -p1a option]
+#	[-factor float]      2.885400             Scale factor for matrix 2/log2
+#	[-cntthr int]        0                    Low bound for amino acids counts to include in matrix
+#	[-p1s]               0                    Penalize disallowed P1 amino acids in shift
+#	[-pkld]              0                    Print KLD list (file to -kldf)
+#	[-kldf string]       kldfq.txt            Print complete list of KLD values to specified file
+#	[-kldq int]          1000                 Total datapoints when printing KLDs
+#	[-ilen int]          1                    Max length of insertions
+#	[-dlen int]          5                    Max length of deletions
+#	[-xc]                0                    Exclude final check of all peptides to clusters
+# Random seed is 2
+# Read 200 elements on seqlist /Users/marinabarrueco/Downloads/gibbscluster-2.0/test/gibbs_43881/data/pepdata.txt
+# Number of temperature steps 20 dt 0.078947
+# Back ground frequences
+# 0 A  0.07400
+# 1 R  0.05200
+# 2 N  0.04500
+# 3 D  0.05400
+# 4 C  0.02500
+# 5 Q  0.03400
+# 6 E  0.05400
+# 7 G  0.07400
+# 8 H  0.02600
+# 9 I  0.06800
+# 10 L  0.09900
+# 11 K  0.05800
+# 12 M  0.02500
+# 13 F  0.04700
+# 14 P  0.03900
+# 15 S  0.05700
+# 16 T  0.05100
+# 17 W  0.01300
+# 18 Y  0.03200
+# 19 V  0.07300
+# Read_realblosum done. Alphabet ARNDCQEGHILKMFPSTWYV
+# G 0 67
+# G 1 67
+# G 2 66
+### Initial alignments weighed KLD sum 0.000000
+
+# Doing temprature step 0 1.500000
+# Doing temprature step 1 1.421053
+# Doing temprature step 2 1.342106
+# Doing temprature step 3 1.263160
+# Doing temprature step 4 1.184213
+# Doing temprature step 5 1.105266
+# Doing temprature step 6 1.026319
+# Doing temprature step 7 0.947372
+# Doing temprature step 8 0.868425
+# Doing temprature step 9 0.789479
+# Doing temprature step 10 0.710532
+# Doing temprature step 11 0.631585
+# Doing temprature step 12 0.552638
+# Doing temprature step 13 0.473691
+# Doing temprature step 14 0.394744
+# Doing temprature step 15 0.315798
+# Doing temprature step 16 0.236851
+# Doing temprature step 17 0.157904
+# Doing temprature step 18 0.078957
+# Doing temprature step 19 0.000010
+## Sequence alignment for group 0
+G  0    0         LTEADLQYGY  LTEDLQYGY o  0 ip -99 il -99 dp   3 dl   1 HLA-A01:01 sS 19.560 bgG   2 bgS  8.239 cS 12.969
+G  0    1         LLESAKMFNY  LLESKMFNY o  0 ip -99 il -99 dp   4 dl   1 HLA-A01:01 sS 15.890 bgG   1 bgS  3.058 cS 13.444
+G  0    2          VADVLVDGY  VADVLVDGY o  0 ip -99 il -99 dp -99 dl -99 HLA-A01:01 sS 12.928 bgG   2 bgS  4.221 cS  9.551
+G  0    3          TADGKTYYY  TADGKTYYY o  0 ip -99 il -99 dp -99 dl -99 HLA-A01:01 sS 14.682 bgG   2 bgS  7.813 cS  8.432
+G  0    4          LVEKSQLGY  LVEKSQLGY o  0 ip -99 il -99 dp -99 dl -99 HLA-A01:01 sS 17.821 bgG  -1 bgS  0.000 cS 17.821
+G  0    5          VVEDKVEGY  VVEDKVEGY o  0 ip -99 il -99 dp -99 dl -99 HLA-A01:01 sS 13.796 bgG  -1 bgS  0.000 cS 13.796
+G  0    6          YVDEYRNDY  YVDEYRNDY o  0 ip -99 il -99 dp -99 dl -99 HLA-A01:01 sS 13.709 bgG   2 bgS  5.660 cS  9.181
+G  0    7         LSDTKYLEMI  LSDTKYLEM o  0 ip -99 il -99 dp -99 dl -99 HLA-A01:01 sS 11.112 bgG  -1 bgS  0.000 cS 11.112
+G  0    8         LSEYSKFLSY  LSEYSFLSY o  0 ip -99 il -99 dp   5 dl   1 HLA-A01:01 sS 19.485 bgG   2 bgS  1.320 cS 18.429
+G  0    9          YIDAQFENY  YIDAQFENY o  0 ip -99 il -99 dp -99 dl -99 HLA-A01:01 sS 19.088 bgG   2 bgS  0.623 cS 18.589
+G  0   10         LMEDEMKEYY  LMEDEMEYY o  0 ip -99 il -99 dp   6 dl   1 HLA-A01:01 sS 14.694 bgG   2 bgS  5.035 cS 10.666
+G  0   11         MVESLVGWGY  MVESLGWGY o  0 ip -99 il -99 dp   5 dl   1 HLA-A01:01 sS 13.994 bgG   2 bgS  6.349 cS  8.914
+G  0   12          TTDFEDDEF  TTDFEDDEF o  0 ip -99 il -99 dp -99 dl -99 HLA-A01:01 sS 13.549 bgG   2 bgS  7.798 cS  7.310
+G  0   13         TSEPKPFLYY  TSEKPFLYY o  0 ip -99 il -99 dp   3 dl   1 HLA-A01:01 sS 18.341 bgG   2 bgS  3.601 cS 15.460
+G  0   14         TLEESAMLRY  TLEESMLRY o  0 ip -99 il -99 dp   5 dl   1 HLA-A01:01 sS 18.232 bgG   1 bgS  6.044 cS 13.397
+G  0   15        LVDNSIRELQY  LVDNSILQY o  0 ip -99 il -99 dp   6 dl   2 HLA-A01:01 sS 17.844 bgG   1 bgS  2.213 cS 16.073
+G  0   16        LSDIGSGIRYL  LSDGSGIRY o  0 ip -99 il -99 dp   3 dl   1 HLA-A01:01 sS 17.163 bgG   2 bgS  5.036 cS 13.134
+G  0   17         FTEVLSPNMY  FTEVLSPNY o  0 ip -99 il -99 dp   8 dl   1 HLA-A01:01 sS 16.548 bgG   2 bgS  7.835 cS 10.280
+G  0   18          LMDKSSTIY  LMDKSSTIY o  0 ip -99 il -99 dp -99 dl -99 HLA-A01:01 sS 13.624 bgG   2 bgS 10.141 cS  5.511
+G  0   19          VLEINSLKY  VLEINSLKY o  0 ip -99 il -99 dp -99 dl -99 HLA-A01:01 sS 10.640 bgG   2 bgS  5.214 cS  6.470
+G  0   20          MSEERTLLY  MSEERTLLY o  0 ip -99 il -99 dp -99 dl -99 HLA-A01:01 sS 14.254 bgG   2 bgS  7.094 cS  8.578
+G  0   21         YLDGRLEPLY  YLDGRLEPY o  0 ip -99 il -99 dp   8 dl   1 HLA-A01:01 sS 15.638 bgG   1 bgS  6.948 cS 10.080
+G  0   22        YTDFDGTRVYS  YTDFDGTRY o  0 ip -99 il -99 dp   8 dl   1 HLA-A01:01 sS 20.472 bgG   2 bgS  8.476 cS 13.691
+G  0   23        YVDDTQFVGFD  YVDDTQFGF o  0 ip -99 il -99 dp   7 dl   1 HLA-A01:01 sS 13.978 bgG   1 bgS  2.921 cS 11.641
+G  0   24         QTENSLHMGY  QTENSLMGY o  0 ip -99 il -99 dp   6 dl   1 HLA-A01:01 sS 15.229 bgG   2 bgS  1.099 cS 14.350
+G  0   25          ETEVSFLDY  ETEVSFLDY o  0 ip -99 il -99 dp -99 dl -99 HLA-A01:01 sS 17.106 bgG   2 bgS  2.792 cS 14.873
+G  0   26         TSEQNPPYSY  TSENPPYSY o  0 ip -99 il -99 dp   3 dl   1 HLA-A01:01 sS 13.839 bgG   2 bgS  4.515 cS 10.227
+G  0   27          QSERQLLLY  QSERQLLLY o  0 ip -99 il -99 dp -99 dl -99 HLA-A01:01 sS 10.496 bgG   2 bgS  4.914 cS  6.564
+G  0   28          ITDYLIEEV  ITDYLIEEV o  0 ip -99 il -99 dp -99 dl -99 HLA-A01:01 sS  7.457 bgG   2 bgS  0.835 cS  6.789
+G  0   29         TSDFIPRLVY  TSDFPRLVY o  0 ip -99 il -99 dp   4 dl   1 HLA-A01:01 sS 16.682 bgG   2 bgS  8.608 cS  9.796
+G  0   30        YTDAPPAYSEL  YTDAPYSEL o  0 ip -99 il -99 dp   5 dl   2 HLA-A01:01 sS 12.646 bgG   2 bgS  1.237 cS 11.656
+G  0   31         HLEEGKDLEY  HLEEKDLEY o  0 ip -99 il -99 dp   4 dl   1 HLA-A01:01 sS 15.046 bgG   1 bgS  7.294 cS  9.210
+G  0   32          LTDIKLGKY  LTDIKLGKY o  0 ip -99 il -99 dp -99 dl -99 HLA-A01:01 sS 14.899 bgG   2 bgS  7.447 cS  8.942
+G  0   33         FSDFLGLHSK  FSDFLGLHS o  0 ip -99 il -99 dp -99 dl -99 HLA-A01:01 sS 10.298 bgG   2 bgS  0.039 cS 10.267
+G  0   34          LADFGFGNF  LADFGFGNF o  0 ip -99 il -99 dp -99 dl -99 HLA-A01:01 sS  9.910 bgG  -1 bgS  0.000 cS  9.910
+G  0   35         RADDADEFGY  RADDADFGY o  0 ip -99 il -99 dp   6 dl   1 HLA-A01:01 sS 12.279 bgG   2 bgS  1.185 cS 11.331
+G  0   36          FMDKLGENL  FMDKLGENL o  0 ip -99 il -99 dp -99 dl -99 HLA-A02:01 sS  9.940 bgG   1 bgS  6.231 cS  4.955
+G  0   37         LLDNSYYEQY  LLDNSYYEY o  0 ip -99 il -99 dp   8 dl   1 HLA-A01:01 sS 19.810 bgG   2 bgS  5.214 cS 15.639
+G  0   38          LMELTMLDY  LMELTMLDY o  0 ip -99 il -99 dp -99 dl -99 HLA-A01:01 sS 13.554 bgG   2 bgS  0.079 cS 13.491
+G  0   39          FTDTEGLPY  FTDTEGLPY o  0 ip -99 il -99 dp -99 dl -99 HLA-A01:01 sS 20.017 bgG   2 bgS  9.319 cS 12.562
+G  0   40          TLDSDQVGY  TLDSDQVGY o  0 ip -99 il -99 dp -99 dl -99 HLA-A01:01 sS 12.033 bgG   2 bgS  7.469 cS  6.057
+G  0   41        DVYADHLDWHY  YADHLDWHY o  2 ip -99 il -99 dp -99 dl -99 HLA-A01:01 sS 18.478 bgG   2 bgS  7.826 cS 12.217
+G  0   42        YADIAVNSDRY  YADIASDRY o  0 ip -99 il -99 dp   5 dl   2 HLA-A01:01 sS 16.393 bgG   2 bgS  6.271 cS 11.377
+G  0   43          VLDRLTFDY  VLDRLTFDY o  0 ip -99 il -99 dp -99 dl -99 HLA-A01:01 sS 13.885 bgG   2 bgS  3.723 cS 10.906
+G  0   44           FTDKAASY  FTDKAA-SY o  0 ip   6 il   1 dp -99 dl -99 HLA-A01:01 sS 16.144 bgG   2 bgS  8.511 cS  9.335
+G  0   45          YVDEELPDY  YVDEELPDY o  0 ip -99 il -99 dp -99 dl -99 HLA-A01:01 sS 16.595 bgG   1 bgS  7.616 cS 10.503
+G  0   46          YSDSAVLKL  YSDSAVLKL o  0 ip -99 il -99 dp -99 dl -99 HLA-A01:01 sS 11.432 bgG   1 bgS  4.368 cS  7.938
+G  0   47          VVDNLQHLY  VVDNLQHLY o  0 ip -99 il -99 dp -99 dl -99 HLA-A01:01 sS 12.255 bgG   2 bgS  9.366 cS  4.762
+G  0   48         TIDLGAAAHY  TIDGAAAHY o  0 ip -99 il -99 dp   3 dl   1 HLA-A01:01 sS 11.180 bgG   2 bgS  5.998 cS  6.382
+G  0   49        YSQSPAYNSQY  YSQSPAYNY o  0 ip -99 il -99 dp   8 dl   2 HLA-A01:01 sS 14.680 bgG   2 bgS  1.307 cS 13.635
+G  0   50         YINASFLDGY  YINASFLDY o  0 ip -99 il -99 dp   8 dl   1 HLA-A01:01 sS 15.876 bgG   1 bgS  1.391 cS 14.763
+G  0   51          FTEDSLLRH  FTEDSLLRH o  0 ip -99 il -99 dp -99 dl -99 HLA-A01:01 sS 14.512 bgG   1 bgS  1.228 cS 13.530
+G  0   52         HTDHHMFFDY  HTDHMFFDY o  0 ip -99 il -99 dp   3 dl   1 HLA-A01:01 sS 16.354 bgG   2 bgS  4.808 cS 12.507
+G  0   53         FSSDDSKLEY  FSDDSKLEY o  0 ip -99 il -99 dp   1 dl   1 HLA-A01:01 sS 20.549 bgG   2 bgS  6.925 cS 15.008
+G  0   54          ITSTRSLNY  ITSTRSLNY o  0 ip -99 il -99 dp -99 dl -99 HLA-A01:01 sS 13.381 bgG   2 bgS  2.357 cS 11.495
+G  0   55          LIDVGTGYY  LIDVGTGYY o  0 ip -99 il -99 dp -99 dl -99 HLA-A01:01 sS  9.922 bgG   2 bgS  6.448 cS  4.764
+G  0   56          VADDPNDPY  VADDPNDPY o  0 ip -99 il -99 dp -99 dl -99 HLA-A01:01 sS 11.680 bgG   2 bgS  3.343 cS  9.006
+G  0   57        VIDEDVKSGRY  VIDEKSGRY o  0 ip -99 il -99 dp   4 dl   2 HLA-A01:01 sS 14.485 bgG   2 bgS  7.825 cS  8.225
+G  0   58          NSDVSLLNY  NSDVSLLNY o  0 ip -99 il -99 dp -99 dl -99 HLA-A01:01 sS 18.421 bgG   2 bgS  3.886 cS 15.312
+G  0   59          YTDNLVRVW  YTDNLVRVW o  0 ip -99 il -99 dp -99 dl -99 HLA-A01:01 sS  8.885 bgG   2 bgS  3.654 cS  5.961
+G  0   60        QTAEASHVSRY  TAEASVSRY o  1 ip -99 il -99 dp   5 dl   1 HLA-A01:01 sS 13.669 bgG   2 bgS  5.047 cS  9.631
+G  0   61          FIEERLLMY  FIEERLLMY o  0 ip -99 il -99 dp -99 dl -99 HLA-A01:01 sS 13.517 bgG   1 bgS  5.469 cS  9.141
+G  0   62         MLDWASGTLY  MLDASGTLY o  0 ip -99 il -99 dp   3 dl   1 HLA-A01:01 sS 13.468 bgG   2 bgS 12.340 cS  3.596
+G  0   63          GTVYEDLRY  GTVYEDLRY o  0 ip -99 il -99 dp -99 dl -99 HLA-A01:01 sS  6.723 bgG   2 bgS  1.323 cS  5.664
+G  0   64        LTEVNKTGTQY  LTEKTGTQY o  0 ip -99 il -99 dp   3 dl   2 HLA-A01:01 sS 14.744 bgG   2 bgS  8.559 cS  7.897
+G  0   65          TVDVLKEAY  TVDVLKEAY o  0 ip -99 il -99 dp -99 dl -99 HLA-A01:01 sS 11.255 bgG   2 bgS  9.468 cS  3.680
+G  0   66         LTETIYKNYY  LTETIYKNY o  0 ip -99 il -99 dp -99 dl -99 HLA-A01:01 sS 14.131 bgG   2 bgS  7.315 cS  8.279
+G  0   67         NSELGSETRY  NSEGSETRY o  0 ip -99 il -99 dp   3 dl   1 HLA-A01:01 sS 12.314 bgG   2 bgS  6.762 cS  6.905
+G  0   68          NTDFYQTSY  NTDFYQTSY o  0 ip -99 il -99 dp -99 dl -99 HLA-A01:01 sS 14.434 bgG   2 bgS 12.449 cS  4.475
+G  0   69          TTEFLYNLY  TTEFLYNLY o  0 ip -99 il -99 dp -99 dl -99 HLA-A01:01 sS 15.254 bgG   2 bgS 13.747 cS  4.256
+G  0   70        PTDLETRSYKY  PTDTRSYKY o  0 ip -99 il -99 dp   3 dl   2 HLA-A01:01 sS 16.364 bgG   2 bgS  9.911 cS  8.435
+G  0   71         PTEISQSLLY  PTEISQLLY o  0 ip -99 il -99 dp   6 dl   1 HLA-A01:01 sS 14.848 bgG   2 bgS  9.312 cS  7.398
+## Sequence alignment for group 1
+G  1    0          TLIDSLDTL  TLIDSLDTL o  0 ip -99 il -99 dp -99 dl -99 HLA-A02:01 sS  8.628 bgG  -1 bgS  0.000 cS  8.628
+G  1    1         SLLPEGPPAI  SLLEGPPAI o  0 ip -99 il -99 dp   3 dl   1 HLA-A02:01 sS 15.743 bgG  -1 bgS  0.000 cS 15.743
+G  1    2         AVYEGHVSCV  AVYEGHVSV o  0 ip -99 il -99 dp   8 dl   1 HLA-A02:01 sS  8.968 bgG  -1 bgS  0.000 cS  8.968
+G  1    3          KLGDLFFRV  KLGDLFFRV o  0 ip -99 il -99 dp -99 dl -99 HLA-A02:01 sS 10.203 bgG   0 bgS  0.757 cS  9.598
+G  1    4         ALADGVVSQA  ALADGVVQA o  0 ip -99 il -99 dp   7 dl   1 HLA-A02:01 sS 11.652 bgG  -1 bgS  0.000 cS 11.652
+G  1    5          TMADQIVTV  TMADQIVTV o  0 ip -99 il -99 dp -99 dl -99 HLA-A02:01 sS  7.578 bgG  -1 bgS  0.000 cS  7.578
+G  1    6          ALYASRLYL  ALYASRLYL o  0 ip -99 il -99 dp -99 dl -99 HLA-A02:01 sS  6.790 bgG  -1 bgS  0.000 cS  6.790
+G  1    7         LLWPGAALLV  LLWPGAALV o  0 ip -99 il -99 dp   7 dl   1 HLA-A02:01 sS  9.487 bgG   2 bgS  1.995 cS  7.891
+G  1    8          YLAKLIFQM  YLAKLIFQM o  0 ip -99 il -99 dp -99 dl -99 HLA-A02:01 sS 10.629 bgG   0 bgS  3.293 cS  7.994
+G  1    9          SLYGGTITI  SLYGGTITI o  0 ip -99 il -99 dp -99 dl -99 HLA-A02:01 sS  9.915 bgG  -1 bgS  0.000 cS  9.915
+G  1   10         KLLEPVPVSV  KLLEVPVSV o  0 ip -99 il -99 dp   4 dl   1 HLA-A02:01 sS 16.807 bgG  -1 bgS  0.000 cS 16.807
+G  1   11          FLLPKFHGV  FLLPKFHGV o  0 ip -99 il -99 dp -99 dl -99 HLA-A02:01 sS 13.375 bgG  -1 bgS  0.000 cS 13.375
+G  1   12          SLAESLDQA  SLAESLDQA o  0 ip -99 il -99 dp -99 dl -99 HLA-A02:01 sS  9.654 bgG  -1 bgS  0.000 cS  9.654
+G  1   13          SLLDIDPLI  SLLDIDPLI o  0 ip -99 il -99 dp -99 dl -99 HLA-A02:01 sS  9.868 bgG  -1 bgS  0.000 cS  9.868
+G  1   14          NLLKLIAEV  NLLKLIAEV o  0 ip -99 il -99 dp -99 dl -99 HLA-A02:01 sS 10.860 bgG  -1 bgS  0.000 cS 10.860
+G  1   15         YLFDEIDQAL  YLFDEIDQL o  0 ip -99 il -99 dp   8 dl   1 HLA-A02:01 sS 13.260 bgG   0 bgS  0.533 cS 12.834
+G  1   16          YILRELPKV  YILRELPKV o  0 ip -99 il -99 dp -99 dl -99 HLA-A02:01 sS 12.469 bgG  -1 bgS  0.000 cS 12.469
+G  1   17          ELFSSPPAV  ELFSSPPAV o  0 ip -99 il -99 dp -99 dl -99 HLA-A02:01 sS 10.562 bgG  -1 bgS  0.000 cS 10.562
+G  1   18          YLKEILEQL  YLKEILEQL o  0 ip -99 il -99 dp -99 dl -99 HLA-A02:01 sS 15.509 bgG   0 bgS  2.448 cS 13.551
+G  1   19        YLLPQQPPPSL  YLLPQPPSL o  0 ip -99 il -99 dp   5 dl   2 HLA-A02:01 sS 17.250 bgG  -1 bgS  0.000 cS 17.250
+G  1   20          ALYSAEHGL  ALYSAEHGL o  0 ip -99 il -99 dp -99 dl -99 HLA-A02:01 sS  8.736 bgG  -1 bgS  0.000 cS  8.736
+G  1   21          GLDNINVFL  GLDNINVFL o  0 ip -99 il -99 dp -99 dl -99 HLA-A02:01 sS  6.402 bgG   2 bgS  1.770 cS  4.986
+G  1   22          ALLETMFGV  ALLETMFGV o  0 ip -99 il -99 dp -99 dl -99 HLA-A02:01 sS 11.350 bgG  -1 bgS  0.000 cS 11.350
+G  1   23          FVDERPEEV  FVDERPEEV o  0 ip -99 il -99 dp -99 dl -99 HLA-A02:01 sS 12.141 bgG   0 bgS  8.451 cS  5.380
+G  1   24         LLYEDIPDKV  LLYEDIPKV o  0 ip -99 il -99 dp   7 dl   1 HLA-A02:01 sS 16.686 bgG  -1 bgS  0.000 cS 16.686
+G  1   25          AMFGKLMTI  AMFGKLMTI o  0 ip -99 il -99 dp -99 dl -99 HLA-A02:01 sS  9.375 bgG  -1 bgS  0.000 cS  9.375
+G  1   26          TLEGTPVFV  TLEGTPVFV o  0 ip -99 il -99 dp -99 dl -99 HLA-A02:01 sS  9.599 bgG   2 bgS  1.477 cS  8.418
+G  1   27          KVASLLHQV  KVASLLHQV o  0 ip -99 il -99 dp -99 dl -99 HLA-A02:01 sS 11.136 bgG  -1 bgS  0.000 cS 11.136
+G  1   28         SLFGGSVKLA  SLFGGSVKL o  0 ip -99 il -99 dp -99 dl -99 HLA-A02:01 sS 10.268 bgG  -1 bgS  0.000 cS 10.268
+G  1   29          FLWERPTLL  FLWERPTLL o  0 ip -99 il -99 dp -99 dl -99 HLA-A02:01 sS 13.802 bgG  -1 bgS  0.000 cS 13.802
+G  1   30          FLNQVLAEI  FLNQVLAEI o  0 ip -99 il -99 dp -99 dl -99 HLA-A02:01 sS 12.006 bgG  -1 bgS  0.000 cS 12.006
+G  1   31          KLLDGPPGV  KLLDGPPGV o  0 ip -99 il -99 dp -99 dl -99 HLA-A02:01 sS 17.527 bgG  -1 bgS  0.000 cS 17.527
+G  1   32          FLLFINHRL  FLLFINHRL o  0 ip -99 il -99 dp -99 dl -99 HLA-A02:01 sS  8.848 bgG  -1 bgS  0.000 cS  8.848
+G  1   33          ILLDRLLYL  ILLDRLLYL o  0 ip -99 il -99 dp -99 dl -99 HLA-A02:01 sS 11.601 bgG   0 bgS  0.595 cS 11.125
+G  1   34          HLYSEVKEV  HLYSEVKEV o  0 ip -99 il -99 dp -99 dl -99 HLA-A02:01 sS 10.360 bgG  -1 bgS  0.000 cS 10.360
+G  1   35          ALQEKLQYL  ALQEKLQYL o  0 ip -99 il -99 dp -99 dl -99 HLA-A02:01 sS 13.626 bgG  -1 bgS  0.000 cS 13.626
+G  1   36          YLAERIPTL  YLAERIPTL o  0 ip -99 il -99 dp -99 dl -99 HLA-A02:01 sS 15.632 bgG  -1 bgS  0.000 cS 15.632
+G  1   37          NLIANVLYL  NLIANVLYL o  0 ip -99 il -99 dp -99 dl -99 HLA-A02:01 sS  4.748 bgG  -1 bgS  0.000 cS  4.748
+G  1   38          KLQNLNIFL  KLQNLNIFL o  0 ip -99 il -99 dp -99 dl -99 HLA-A02:01 sS  8.547 bgG  -1 bgS  0.000 cS  8.547
+G  1   39          TLQEFLERI  TLQEFLERI o  0 ip -99 il -99 dp -99 dl -99 HLA-A02:01 sS 10.163 bgG   0 bgS  1.357 cS  9.078
+G  1   40          FLLEKGYEV  FLLEKGYEV o  0 ip -99 il -99 dp -99 dl -99 HLA-A02:01 sS 14.044 bgG   0 bgS  1.914 cS 12.513
+G  1   41         YLLGLGPLEV  YLLGGPLEV o  0 ip -99 il -99 dp   4 dl   1 HLA-A02:01 sS 17.928 bgG  -1 bgS  0.000 cS 17.928
+G  1   42         GILGIQPPSV  GILGIPPSV o  0 ip -99 il -99 dp   5 dl   1 HLA-A02:01 sS 11.374 bgG  -1 bgS  0.000 cS 11.374
+G  1   43          YLWNTVSKL  YLWNTVSKL o  0 ip -99 il -99 dp -99 dl -99 HLA-A02:01 sS  9.745 bgG  -1 bgS  0.000 cS  9.745
+G  1   44         TLIRVPIPQV  TLIRVPPQV o  0 ip -99 il -99 dp   6 dl   1 HLA-A02:01 sS 14.029 bgG  -1 bgS  0.000 cS 14.029
+G  1   45          ALMPVLNQV  ALMPVLNQV o  0 ip -99 il -99 dp -99 dl -99 HLA-A02:01 sS 14.153 bgG   2 bgS  0.314 cS 13.902
+G  1   46          SLLESVQKL  SLLESVQKL o  0 ip -99 il -99 dp -99 dl -99 HLA-A02:01 sS 11.719 bgG  -1 bgS  0.000 cS 11.719
+G  1   47        KLLCGLLAERL  KLLCGLLRL o  0 ip -99 il -99 dp   7 dl   2 HLA-A02:01 sS 10.522 bgG  -1 bgS  0.000 cS 10.522
+G  1   48          FLTRIISQL  FLTRIISQL o  0 ip -99 il -99 dp -99 dl -99 HLA-A02:01 sS 10.372 bgG  -1 bgS  0.000 cS 10.372
+G  1   49          MLDEILLQL  MLDEILLQL o  0 ip -99 il -99 dp -99 dl -99 HLA-A02:01 sS 13.399 bgG   0 bgS  6.941 cS  7.847
+G  1   50         FLSLINVGLI  FLSLINVGL o  0 ip -99 il -99 dp -99 dl -99 HLA-A02:01 sS  4.919 bgG  -1 bgS  0.000 cS  4.919
+G  1   51          HLLNESPML  HLLNESPML o  0 ip -99 il -99 dp -99 dl -99 HLA-A02:01 sS  8.158 bgG  -1 bgS  0.000 cS  8.158
+G  1   52          FMYDRPLRL  FMYDRPLRL o  0 ip -99 il -99 dp -99 dl -99 HLA-A02:01 sS 13.543 bgG   0 bgS  3.531 cS 10.718
+G  1   53          ALPEIFTEL  ALPEIFTEL o  0 ip -99 il -99 dp -99 dl -99 HLA-A02:01 sS  8.684 bgG  -1 bgS  0.000 cS  8.684
+G  1   54          HIAEVSQEV  HIAEVSQEV o  0 ip -99 il -99 dp -99 dl -99 HLA-A02:01 sS  7.850 bgG  -1 bgS  0.000 cS  7.850
+G  1   55          LLLKYTEKL  LLLKYTEKL o  0 ip -99 il -99 dp -99 dl -99 HLA-A02:01 sS  8.549 bgG  -1 bgS  0.000 cS  8.549
+G  1   56          VLFGLLREV  VLFGLLREV o  0 ip -99 il -99 dp -99 dl -99 HLA-A02:01 sS  9.873 bgG  -1 bgS  0.000 cS  9.873
+G  1   57          GLSSLSIHL  GLSSLSIHL o  0 ip -99 il -99 dp -99 dl -99 HLA-A02:01 sS  5.107 bgG   0 bgS  0.485 cS  4.719
+G  1   58         KLFSGVLMDL  KLFSGLMDL o  0 ip -99 il -99 dp   5 dl   1 HLA-A02:01 sS 13.419 bgG  -1 bgS  0.000 cS 13.419
+G  1   59         FLDPRPLTVV  FLDPRPLTV o  0 ip -99 il -99 dp -99 dl -99 HLA-A02:01 sS 14.149 bgG   2 bgS  4.474 cS 10.570
+G  1   60           FLGDGMGV  FLGDG-MGV o  0 ip   5 il   1 dp -99 dl -99 HLA-A02:01 sS 12.485 bgG  -1 bgS  0.000 cS 12.485
+G  1   61          VLQGKLAEV  VLQGKLAEV o  0 ip -99 il -99 dp -99 dl -99 HLA-A02:01 sS 12.760 bgG   0 bgS  0.490 cS 12.368
+G  1   62          ALNNLLHSL  ALNNLLHSL o  0 ip -99 il -99 dp -99 dl -99 HLA-A02:01 sS 13.324 bgG  -1 bgS  0.000 cS 13.324
+G  1   63          YLEEDVYQL  YLEEDVYQL o  0 ip -99 il -99 dp -99 dl -99 HLA-A02:01 sS 15.450 bgG   0 bgS  7.987 cS  9.061
+G  1   64        RLGEAEGLMKV  RLAEGLMKV o  0 ip -99 il -99 dp   2 dl   2 HLA-A02:01 sS 14.946 bgG  -1 bgS  0.000 cS 14.946
+G  1   65          ALARTALAL  ALARTALAL o  0 ip -99 il -99 dp -99 dl -99 HLA-A02:01 sS  5.888 bgG  -1 bgS  0.000 cS  5.888
+G  1   66          KLQIVEMPL  KLQIVEMPL o  0 ip -99 il -99 dp -99 dl -99 HLA-A02:01 sS  5.387 bgG  -1 bgS  0.000 cS  5.387
+G  1   67          KLQLVEMPL  KLQLVEMPL o  0 ip -99 il -99 dp -99 dl -99 HLA-A02:01 sS  5.212 bgG  -1 bgS  0.000 cS  5.212
+G  1   68          FLLWATAEA  FLLWATAEA o  0 ip -99 il -99 dp -99 dl -99 HLA-A02:01 sS  4.830 bgG  -1 bgS  0.000 cS  4.830
+G  1   69          LLLDMQNRL  LLLDMQNRL o  0 ip -99 il -99 dp -99 dl -99 HLA-A02:01 sS  7.444 bgG  -1 bgS  0.000 cS  7.444
+G  1   70          KLFIGGLNV  KLFIGGLNV o  0 ip -99 il -99 dp -99 dl -99 HLA-A02:01 sS  5.591 bgG  -1 bgS  0.000 cS  5.591
+G  1   71        ALLEQTGDMSL  ALLEGDMSL o  0 ip -99 il -99 dp   4 dl   2 HLA-A02:01 sS 15.418 bgG  -1 bgS  0.000 cS 15.418
+G  1   72          GLLGYLHFV  GLLGYLHFV o  0 ip -99 il -99 dp -99 dl -99 HLA-A02:01 sS 11.691 bgG  -1 bgS  0.000 cS 11.691
+G  1   73          TIMKKVTSV  TIMKKVTSV o  0 ip -99 il -99 dp -99 dl -99 HLA-A02:01 sS  5.005 bgG  -1 bgS  0.000 cS  5.005
+G  1   74          VLIKDLFHI  VLIKDLFHI o  0 ip -99 il -99 dp -99 dl -99 HLA-A02:01 sS  8.217 bgG  -1 bgS  0.000 cS  8.217
+G  1   75          ILNEIVNFV  ILNEIVNFV o  0 ip -99 il -99 dp -99 dl -99 HLA-A02:01 sS 11.973 bgG  -1 bgS  0.000 cS 11.973
+G  1   76          LLLPDYYLV  LLLPDYYLV o  0 ip -99 il -99 dp -99 dl -99 HLA-A02:01 sS  9.383 bgG   2 bgS  2.727 cS  7.202
+G  1   77          ALYTGDPNL  ALYTGDPNL o  0 ip -99 il -99 dp -99 dl -99 HLA-A02:01 sS  9.678 bgG  -1 bgS  0.000 cS  9.678
+G  1   78          VLGEGVPIL  VLGEGVPIL o  0 ip -99 il -99 dp -99 dl -99 HLA-A02:01 sS  9.179 bgG  -1 bgS  0.000 cS  9.179
+G  1   79          YLKELLNLA  YLKELLNLA o  0 ip -99 il -99 dp -99 dl -99 HLA-A02:01 sS  8.449 bgG   0 bgS  0.339 cS  8.178
+G  1   80          ILNPLLTLL  ILNPLLTLL o  0 ip -99 il -99 dp -99 dl -99 HLA-A02:01 sS  8.733 bgG   2 bgS  5.576 cS  4.272
+G  1   81          FLNDIFERI  FLNDIFERI o  0 ip -99 il -99 dp -99 dl -99 HLA-A02:01 sS 11.891 bgG   0 bgS  4.742 cS  8.098
+G  1   82          SLDGKAIKV  SLDGKAIKV o  0 ip -99 il -99 dp -99 dl -99 HLA-A02:01 sS  8.001 bgG   0 bgS  2.316 cS  6.148
+G  1   83          LLLAAPAQA  LLLAAPAQA o  0 ip -99 il -99 dp -99 dl -99 HLA-A02:01 sS  8.415 bgG  -1 bgS  0.000 cS  8.415
+G  1   84          KLNPQQFEV  KLNPQQFEV o  0 ip -99 il -99 dp -99 dl -99 HLA-A02:01 sS 11.649 bgG   2 bgS  1.672 cS 10.311
+G  1   85          LLDRFLATV  LLDRFLATV o  0 ip -99 il -99 dp -99 dl -99 HLA-A02:01 sS  8.557 bgG   2 bgS  3.474 cS  5.778
+G  1   86          YLEEYKFQV  YLEEYKFQV o  0 ip -99 il -99 dp -99 dl -99 HLA-A02:01 sS 12.463 bgG   0 bgS  6.543 cS  7.229
+G  1   87          VLTEHVAAA  VLTEHVAAA o  0 ip -99 il -99 dp -99 dl -99 HLA-A02:01 sS  5.080 bgG  -1 bgS  0.000 cS  5.080
+G  1   88          AMNGHTAAV  AMNGHTAAV o  0 ip -99 il -99 dp -99 dl -99 HLA-A02:01 sS  7.560 bgG  -1 bgS  0.000 cS  7.560
+G  1   89         LLLPDYYLVT  LLLPDYYLV o  0 ip -99 il -99 dp -99 dl -99 HLA-A02:01 sS  9.383 bgG   2 bgS  2.727 cS  7.202
+G  1   90          FIEALLPHV  FIEALLPHV o  0 ip -99 il -99 dp -99 dl -99 HLA-A02:01 sS 10.378 bgG   0 bgS  6.162 cS  5.449
+G  1   91          LMNPNIASV  LMNPNIASV o  0 ip -99 il -99 dp -99 dl -99 HLA-A02:01 sS  8.372 bgG   2 bgS  1.881 cS  6.867
+G  1   92          KQVSDLISV  KQVSDLISV o  0 ip -99 il -99 dp -99 dl -99 HLA-A02:01 sS  2.296 bgG  -1 bgS  0.000 cS  2.296
+G  1   93        YLAEKYEWDVA  YLAEKYEDV o  0 ip -99 il -99 dp   7 dl   1 HLA-A02:01 sS 11.161 bgG   0 bgS  5.561 cS  6.712
+G  1   94          FVDDYTVRV  FVDDYTVRV o  0 ip -99 il -99 dp -99 dl -99 HLA-A01:01 sS  8.759 bgG   0 bgS  7.936 cS  2.411
+G  1   95        RMLEDRDLFVM  RMLEDDLFV o  0 ip -99 il -99 dp   5 dl   1 HLA-A02:01 sS  8.271 bgG   0 bgS  4.547 cS  4.633
+G  1   96        FLNGGILNYMI  FLNGGLNYM o  0 ip -99 il -99 dp   5 dl   1 HLA-A02:01 sS 12.490 bgG   0 bgS  0.735 cS 11.902
+## Sequence alignment for group 2
+G  2    0        SSDEEFAAALY  SSDEEAALY o  0 ip -99 il -99 dp   5 dl   2 HLA-A01:01 sS 15.132 bgG   0 bgS 10.801 cS  6.491
+G  2    1          ASDPNSSIF  ASDPNSSIF o  0 ip -99 il -99 dp -99 dl -99 HLA-A01:01 sS 16.073 bgG   0 bgS  1.983 cS 14.487
+G  2    2          ETDPVENTY  ETDPVENTY o  0 ip -99 il -99 dp -99 dl -99 HLA-A01:01 sS 15.570 bgG   0 bgS  6.066 cS 10.718
+G  2    3         ETVPRSGEVY  ETVPRSGVY o  0 ip -99 il -99 dp   7 dl   1 HLA-A01:01 sS 12.100 bgG   0 bgS  3.256 cS  9.495
+G  2    4        DTSRPLGDSMY  TSRPLGSMY o  1 ip -99 il -99 dp   6 dl   1 HLA-A01:01 sS 15.146 bgG   0 bgS  5.482 cS 10.760
+G  2    5        VLERNPNGWWY  VLEPNGWWY o  0 ip -99 il -99 dp   3 dl   2 HLA-A01:01 sS 13.161 bgG   0 bgS  7.046 cS  7.524
+G  2    6          ATDRFRSLY  ATDRFRSLY o  0 ip -99 il -99 dp -99 dl -99 HLA-A01:01 sS 18.061 bgG   0 bgS  7.851 cS 11.780
+G  2    7          ATDIFSYLV  ATDIFSYLV o  0 ip -99 il -99 dp -99 dl -99 HLA-A01:01 sS 14.600 bgG   0 bgS  3.854 cS 11.517
+G  2    8          LQDPFHGVY  LQDPFHGVY o  0 ip -99 il -99 dp -99 dl -99 HLA-A01:01 sS 19.515 bgG   0 bgS  3.025 cS 17.095
+G  2    9         ATDIFSYLVE  ATDIFSYLV o  0 ip -99 il -99 dp -99 dl -99 HLA-A01:01 sS 14.600 bgG   0 bgS  3.854 cS 11.517
+G  2   10         ATNPESKVFY  ATNPESKFY o  0 ip -99 il -99 dp   7 dl   1 HLA-A01:01 sS 17.910 bgG   0 bgS  4.124 cS 14.610
+G  2   11         ATDVLHAVWY  ATDVLHAWY o  0 ip -99 il -99 dp   7 dl   1 HLA-A01:01 sS 19.636 bgG   0 bgS  8.071 cS 13.179
+G  2   12         TSDHFETIMK  TSDHFETIM o  0 ip -99 il -99 dp -99 dl -99 HLA-A01:01 sS  8.857 bgG   0 bgS  4.068 cS  5.603
+G  2   13          SSEVTSQLY  SSEVTSQLY o  0 ip -99 il -99 dp -99 dl -99 HLA-A01:01 sS 14.244 bgG   0 bgS  8.564 cS  7.393
+G  2   14          TTEAVHYLY  TTEAVHYLY o  0 ip -99 il -99 dp -99 dl -99 HLA-A01:01 sS 15.579 bgG   0 bgS 12.220 cS  5.803
+G  2   15         NTDPYKRAVY  NTDPYKAVY o  0 ip -99 il -99 dp   6 dl   1 HLA-A01:01 sS 19.565 bgG   0 bgS  8.125 cS 13.066
+G  2   16        TLIELWEGLTV  TLELWEGLT o  0 ip -99 il -99 dp   2 dl   1 HLA-A02:01 sS 11.558 bgG   1 bgS  0.299 cS 11.319
+G  2   17        KTDPVRLTQLY  KTDPVRQLY o  0 ip -99 il -99 dp   6 dl   2 HLA-A01:01 sS 19.989 bgG   0 bgS  5.651 cS 15.468
+G  2   18          FQDQLHQLY  FQDQLHQLY o  0 ip -99 il -99 dp -99 dl -99 HLA-A01:01 sS 12.321 bgG   0 bgS  7.551 cS  6.280
+G  2   19         TFNLEGSLIY  TFNLEGSLY o  0 ip -99 il -99 dp   8 dl   1 HLA-A01:01 sS 12.373 bgG   0 bgS  4.232 cS  8.987
+G  2   20          SLDDFQAWL  SLDDFQAWL o  0 ip -99 il -99 dp -99 dl -99 HLA-A02:01 sS  8.621 bgG   1 bgS  5.357 cS  4.335
+G  2   21        DLDLESPKSLY  DLDLESSLY o  0 ip -99 il -99 dp   6 dl   2 HLA-A01:01 sS 15.417 bgG   0 bgS  7.103 cS  9.734
+G  2   22        LTDLVLKSSVY  LTDLVSSVY o  0 ip -99 il -99 dp   5 dl   2 HLA-A01:01 sS 16.102 bgG   0 bgS 11.669 cS  6.767
+G  2   23         TLGSFSGLRV  TLGSFSGLV o  0 ip -99 il -99 dp   8 dl   1 HLA-A02:01 sS  8.688 bgG   1 bgS  2.306 cS  6.844
+G  2   24         NTDLWIVMEY  NTDLWIVMY o  0 ip -99 il -99 dp   8 dl   1 HLA-A01:01 sS 14.091 bgG   0 bgS  7.901 cS  7.770
+G  2   25        ISYGPDWKDFY  SYGPWKDFY o  1 ip -99 il -99 dp   4 dl   1 HLA-A01:01 sS 15.136 bgG   0 bgS  1.259 cS 14.129
+G  2   26         ASEPSAQLSY  ASEPSAQLY o  0 ip -99 il -99 dp   8 dl   1 HLA-A01:01 sS 16.468 bgG   0 bgS  7.167 cS 10.734
+G  2   27         KTDMEKLTFY  KTDMEKTFY o  0 ip -99 il -99 dp   6 dl   1 HLA-A01:01 sS 14.564 bgG   0 bgS  9.058 cS  7.317
+G  2   28        SSEYHYVGGFY  SSEYVGGFY o  0 ip -99 il -99 dp   3 dl   2 HLA-A01:01 sS 13.447 bgG   0 bgS  7.575 cS  7.388
+G  2   29         FTASWGDLHY  FTASWGDLY o  0 ip -99 il -99 dp   8 dl   1 HLA-A01:01 sS 14.790 bgG   0 bgS  7.110 cS  9.101
+G  2   30        ATAAALTYGLY  ATALTYGLY o  0 ip -99 il -99 dp   2 dl   2 HLA-A01:01 sS 11.203 bgG   0 bgS  4.430 cS  7.659
+# group 0, size 72: Final KLD sum after 40000 epochs - 10.251851
+# group 1, size 97: Final KLD sum after 40000 epochs - 9.633711
+# group 2, size 31: Final KLD sum after 40000 epochs - 9.834537
+#
+# Final number of non-empty clusters: 3
+
+### Final KLD sum after 40000 iterations: 9.887369

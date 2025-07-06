@@ -1,0 +1,329 @@
+# /Users/marinabarrueco/Downloads/gibbscluster-2.0/bin/gibbs_cluster_1.2.2_DB.Darwin_x86_64 -l 9 -g 2 -ts 1.5 -blf /Users/marinabarrueco/Downloads/gibbscluster-2.0/data/blosum%i.freq_rownorm -blm 62 -base 0 -bg 1 -i 10 -s 1 -nt 20 -fr 20 -fs 100 -wlc 200 -swt 0 -lambda 0.8 -dlen 0 -ilen 0 -findels 10 -sigma 5 /Users/marinabarrueco/Downloads/gibbscluster-2.0/test/gibbs_41950/data/pepdata.txt
+# Thu Jan 30 15:28:37 2025
+# User: marinabarrueco
+# PWD : /Users/marinabarrueco/Downloads/gibbscluster-2.0/test
+# Host: Darwin MacBook-Air-de-Marina.local 23.6.0 x86_64
+# -l       9                    Motif length
+# -g       2                    Number of initial clusters
+# -ts      1.500000             Start temperature
+# -blf     /Users/marinabarrueco/Downloads/gibbscluster-2.0/data/blosum%i.freq_rownorm Real value blosum matrix filename
+# -blm     62                   Blosum matrix number
+# -base    0.000000             Baseline value to discard to trash
+# -bg      1                    [0] Flat (0.05) [1] Precalculated [2] From data
+# -i       10                   Number of iterations per train example
+# -s       1                    Seed [-1] Default, [0] Time [>0] Specific seed
+# -nt      20                   Number of temperature steps
+# -fr      20                   Interval between Single sequence moves (if -mhc1 == 1)
+# -fs      100                  Interval between Phase shift moves
+# -wlc     200.000000           Weigth on low count
+# -swt     0                    [0] 1/ns [1] Clustering [2] No sequence weighting
+# -lambda  0.800000             Penalty factor for overlapping clusters
+# -dlen    0                    Max length of deletions
+# -ilen    0                    Max length of insertions
+# -findels 10                   Interval between Indel moves
+# -sigma   5.000000             Weight on blosum for small cluster confidence
+# Command line parameters set to:
+#	[-l int]             9                    Motif length
+#	[-g int]             2                    Number of initial clusters
+#	[-trash]             0                    Use trash cluster to remove outliers
+#	[-i int]             10                   Number of iterations per train example
+#	[-s int]             1                    Seed [-1] Default, [0] Time [>0] Specific seed
+#	[-f filename]        0                    File for frequency matrices
+#	[-m filename]        0                    File for log-odds matrices
+#	[-a filename]        aln.txt              File for multiple alignments
+#	[-pc]                0                    Print core of alignment
+#	[-c filename]        core.txt             File for core
+#	[-alp string]        ARNDCQEGHILKMFPSTWYV Amino acid alphabet
+#	[-bg int]            1                    [0] Flat (0.05) [1] Precalculated [2] From data
+#	[-base float]        0.000000             Baseline value to discard to trash
+#	[-mhc1]              0                    Use peptides of fixed length, no window shift
+#	[-ts float]          1.500000             Start temperature
+#	[-te float]          0.000010             Final temperature
+#	[-nt int]            20                   Number of temperature steps
+#	[-ms int]            3                    Max phase shift distance
+#	[-fs int]            100                  Interval between Phase shift moves
+#	[-findels int]       10                   Interval between Indel moves
+#	[-fr int]            20                   Interval between Single sequence moves (if -mhc1 == 1)
+#	[-lambda float]      0.800000             Penalty factor for overlapping clusters
+#	[-sigma float]       5.000000             Weight on blosum for small cluster confidence
+#	[-noph]              0                    Exclude phase shift move
+#	[-r float]           5.000000             Scale factor for phase shift moves
+#	[-wlc float]         200.000000           Weigth on low count
+#	[-blf filename]      /Users/marinabarrueco/Downloads/gibbscluster-2.0/data/blosum%i.freq_rownorm Real value blosum matrix filename
+#	[-blm int]           62                   Blosum matrix number
+#	[-cX int]            1                    [0] Count X as A, [1] Exclude X from count
+#	[-v]                 0                    Verbose mode
+#	[-debug]             0                    Debug model
+#	[-cthr float]        0.620000             Clustering threshold for sequence weighting
+#	[-swt int]           0                    [0] 1/ns [1] Clustering [2] No sequence weighting
+#	[-w string]          1,3,1,1,1,1,1,1,3    Weigths on positions
+#	[-iw]                0                    Include weights on positions
+#	[-noc float]         0.000000             Log-odds score assignment to no count elements
+#	[-p1a]               0                    Allow only Hydrophobic AA at P1
+#	[-p1l filename]      ILVMFYW              Allowed letters at P1 [Only with -p1a option]
+#	[-factor float]      2.885400             Scale factor for matrix 2/log2
+#	[-cntthr int]        0                    Low bound for amino acids counts to include in matrix
+#	[-p1s]               0                    Penalize disallowed P1 amino acids in shift
+#	[-pkld]              0                    Print KLD list (file to -kldf)
+#	[-kldf string]       kldfq.txt            Print complete list of KLD values to specified file
+#	[-kldq int]          1000                 Total datapoints when printing KLDs
+#	[-ilen int]          0                    Max length of insertions
+#	[-dlen int]          0                    Max length of deletions
+#	[-xc]                0                    Exclude final check of all peptides to clusters
+# Random seed is 1
+# Read 200 elements on seqlist /Users/marinabarrueco/Downloads/gibbscluster-2.0/test/gibbs_41950/data/pepdata.txt
+# Number of temperature steps 20 dt 0.078947
+# Back ground frequences
+# 0 A  0.07400
+# 1 R  0.05200
+# 2 N  0.04500
+# 3 D  0.05400
+# 4 C  0.02500
+# 5 Q  0.03400
+# 6 E  0.05400
+# 7 G  0.07400
+# 8 H  0.02600
+# 9 I  0.06800
+# 10 L  0.09900
+# 11 K  0.05800
+# 12 M  0.02500
+# 13 F  0.04700
+# 14 P  0.03900
+# 15 S  0.05700
+# 16 T  0.05100
+# 17 W  0.01300
+# 18 Y  0.03200
+# 19 V  0.07300
+# Read_realblosum done. Alphabet ARNDCQEGHILKMFPSTWYV
+# G 0 100
+# G 1 100
+### Initial alignments weighed KLD sum 0.000000
+
+# Doing temprature step 0 1.500000
+# Doing temprature step 1 1.421053
+# Doing temprature step 2 1.342106
+# Doing temprature step 3 1.263160
+# Doing temprature step 4 1.184213
+# Doing temprature step 5 1.105266
+# Doing temprature step 6 1.026319
+# Doing temprature step 7 0.947372
+# Doing temprature step 8 0.868425
+# Doing temprature step 9 0.789479
+# Doing temprature step 10 0.710532
+# Doing temprature step 11 0.631585
+# Doing temprature step 12 0.552638
+# Doing temprature step 13 0.473691
+# Doing temprature step 14 0.394744
+# Doing temprature step 15 0.315798
+# Doing temprature step 16 0.236851
+# Doing temprature step 17 0.157904
+# Doing temprature step 18 0.078957
+# Doing temprature step 19 0.000010
+## Sequence alignment for group 0
+G  0    0     GLSPSKRNQTFIPW  KRNQTFIPW o  5 ip -99 il -99 dp -99 dl -99    Peplist sS  9.113 bgG   1 bgS  6.829 cS  3.650
+G  0    1    LWRRTKLMSNIKMNC  WRRTKLMSN o  1 ip -99 il -99 dp -99 dl -99    Peplist sS  3.012 bgG   1 bgS  0.828 cS  2.350
+G  0    2     AENKLYKMRIPRHL  KLYKMRIPR o  3 ip -99 il -99 dp -99 dl -99    Peplist sS 10.313 bgG   1 bgS  4.650 cS  6.593
+G  0    3   GKAANEIRISKNRGPT  RISKNRGPT o  7 ip -99 il -99 dp -99 dl -99    Peplist sS  5.648 bgG   1 bgS  0.257 cS  5.442
+G  0    4       WIYDPRNQKTDT  WIYDPRNQK o  0 ip -99 il -99 dp -99 dl -99    Peplist sS 11.933 bgG   1 bgS  3.263 cS  9.322
+G  0    5       PALYSYASAKWW  LYSYASAKW o  2 ip -99 il -99 dp -99 dl -99    Peplist sS  8.108 bgG  -1 bgS  0.000 cS  8.108
+G  0    6   IKRNAVLIDAGLPKLQ  VLIDAGLPK o  5 ip -99 il -99 dp -99 dl -99    Peplist sS  4.120 bgG  -1 bgS  0.000 cS  4.120
+G  0    7     IILAALFMYYTKYW  ILAALFMYY o  1 ip -99 il -99 dp -99 dl -99    Peplist sS 10.424 bgG   1 bgS  0.726 cS  9.844
+G  0    8         TRLYYDSMSY  RLYYDSMSY o  1 ip -99 il -99 dp -99 dl -99    Peplist sS 10.396 bgG   1 bgS  0.378 cS 10.093
+G  0    9         LKVSWRWMVY  KVSWRWMVY o  1 ip -99 il -99 dp -99 dl -99    Peplist sS 12.509 bgG  -1 bgS  0.000 cS 12.509
+G  0   10       ALFGQALHKAGD  ALFGQALHK o  0 ip -99 il -99 dp -99 dl -99    Peplist sS  7.656 bgG  -1 bgS  0.000 cS  7.656
+G  0   11      SIIPSGPLKIDMW  IIPSGPLKI o  1 ip -99 il -99 dp -99 dl -99    Peplist sS  3.457 bgG   1 bgS  1.693 cS  2.103
+G  0   12       RHTVNPIVTEKY  RHTVNPIVT o  0 ip -99 il -99 dp -99 dl -99    Peplist sS  1.495 bgG  -1 bgS  0.000 cS  1.495
+G  0   13 EKKDFRAYRNALSMPIRMN  YRNALSMPI o  7 ip -99 il -99 dp -99 dl -99    Peplist sS  5.328 bgG   1 bgS  3.767 cS  2.314
+G  0   14      FCHNISFKSINKQ  NISFKSINK o  3 ip -99 il -99 dp -99 dl -99    Peplist sS  8.499 bgG   1 bgS  3.940 cS  5.348
+G  0   15      MKLRKPKHKKSFK  MKLRKPKHK o  0 ip -99 il -99 dp -99 dl -99    Peplist sS  8.334 bgG   1 bgS  1.683 cS  6.987
+G  0   16          GMSSRAIAR  GMSSRAIAR o  0 ip -99 il -99 dp -99 dl -99    Peplist sS -0.170 bgG  -1 bgS  0.000 cS -0.170
+G  0   17    TALMRWRHPRVVSDS  RWRHPRVVS o  4 ip -99 il -99 dp -99 dl -99    Peplist sS  5.883 bgG   1 bgS  3.023 cS  3.465
+G  0   18        ASFDKAKLKQK  ASFDKAKLK o  0 ip -99 il -99 dp -99 dl -99    Peplist sS  5.867 bgG  -1 bgS  0.000 cS  5.867
+G  0   19 EWCETLSERISSKRYGRA  RISSKRYGR o  8 ip -99 il -99 dp -99 dl -99    Peplist sS  8.725 bgG   1 bgS  5.262 cS  4.516
+G  0   20    KKTVLEFILQKIFKH  FILQKIFKH o  6 ip -99 il -99 dp -99 dl -99    Peplist sS  6.351 bgG   1 bgS  2.804 cS  4.108
+G  0   21 FRDHGATSIYTIERAPMFW  TIERAPMFW o 10 ip -99 il -99 dp -99 dl -99    Peplist sS 10.389 bgG   1 bgS  5.998 cS  5.591
+G  0   22 MENSTMTIREFPRKSYVM  IREFPRKSY o  7 ip -99 il -99 dp -99 dl -99    Peplist sS  6.366 bgG   1 bgS  2.939 cS  4.014
+G  0   23       KKMLEASTIYRS  MLEASTIYR o  2 ip -99 il -99 dp -99 dl -99    Peplist sS  7.839 bgG   1 bgS  0.074 cS  7.780
+G  0   24      EYRVRSLAKSLHW  RSLAKSLHW o  4 ip -99 il -99 dp -99 dl -99    Peplist sS 10.422 bgG   1 bgS  4.835 cS  6.553
+G  0   25   ASFIAGMLVGRLGKGY  FIAGMLVGR o  2 ip -99 il -99 dp -99 dl -99    Peplist sS  4.033 bgG   1 bgS  0.276 cS  3.812
+G  0   26   SMEWTLWKAGILYDTP  WTLWKAGIL o  3 ip -99 il -99 dp -99 dl -99    Peplist sS  5.069 bgG   1 bgS  3.347 cS  2.391
+G  0   27     YVVMMVIFRLMRDT  YVVMMVIFR o  0 ip -99 il -99 dp -99 dl -99    Peplist sS  6.121 bgG   1 bgS  2.627 cS  4.019
+G  0   28    DFVMTYSHHACRNYN  YSHHACRNY o  5 ip -99 il -99 dp -99 dl -99    Peplist sS  3.569 bgG   1 bgS  1.424 cS  2.430
+G  0   29        SYILWKDIFHK  YILWKDIFH o  1 ip -99 il -99 dp -99 dl -99    Peplist sS 11.697 bgG  -1 bgS  0.000 cS 11.697
+G  0   30    MWEPGLIFCHSKKKD  LIFCHSKKK o  5 ip -99 il -99 dp -99 dl -99    Peplist sS 11.349 bgG  -1 bgS  0.000 cS 11.349
+G  0   31    YSLHIVKYKQYLKSF  YSLHIVKYK o  0 ip -99 il -99 dp -99 dl -99    Peplist sS  8.091 bgG   1 bgS  4.920 cS  4.156
+G  0   32  FKLALFFIIFNKQFHQI  IIFNKQFHQ o  7 ip -99 il -99 dp -99 dl -99    Peplist sS  7.791 bgG   1 bgS  0.357 cS  7.505
+G  0   33 VLKERLIEKTNEKDQKNK  RLIEKTNEK o  4 ip -99 il -99 dp -99 dl -99    Peplist sS  6.512 bgG   1 bgS  0.669 cS  5.977
+G  0   34   IMQDWYPKLKNSYVRA  WYPKLKNSY o  4 ip -99 il -99 dp -99 dl -99    Peplist sS  8.699 bgG   1 bgS 10.105 cS  0.615
+G  0   35  FESMTLVPVLEKALMPK  VLEKALMPK o  8 ip -99 il -99 dp -99 dl -99    Peplist sS  8.274 bgG   1 bgS  8.036 cS  1.845
+G  0   36 VRWGVTLYVKALTKHFTS  TLYVKALTK o  5 ip -99 il -99 dp -99 dl -99    Peplist sS  8.150 bgG   1 bgS  2.740 cS  5.958
+G  0   37     SYEPLIWAYLSKKR  IWAYLSKKR o  5 ip -99 il -99 dp -99 dl -99    Peplist sS  6.673 bgG   1 bgS  2.590 cS  4.600
+G  0   38   CSSVITQACPKFFVGA  VITQACPKF o  3 ip -99 il -99 dp -99 dl -99    Peplist sS  5.287 bgG  -1 bgS  0.000 cS  5.287
+G  0   39 LFRMKAYKIISLKEVEYF  IISLKEVEY o  8 ip -99 il -99 dp -99 dl -99    Peplist sS  6.194 bgG   1 bgS  1.584 cS  4.927
+G  0   40       SAIFASSMTKTN  AIFASSMTK o  1 ip -99 il -99 dp -99 dl -99    Peplist sS 10.566 bgG   1 bgS  0.793 cS  9.931
+G  0   41      PERTFGKLPYRNL  RTFGKLPYR o  2 ip -99 il -99 dp -99 dl -99    Peplist sS  8.885 bgG   1 bgS  6.205 cS  3.921
+G  0   42     IWYPKGPIRFVLAL  WYPKGPIRF o  1 ip -99 il -99 dp -99 dl -99    Peplist sS  8.079 bgG   1 bgS  9.910 cS  0.152
+G  0   43    IMGFGHRIYKCYSRF  MGFGHRIYK o  1 ip -99 il -99 dp -99 dl -99    Peplist sS  7.993 bgG   1 bgS  2.329 cS  6.130
+G  0   44    YQEMLSRVAAVKFQQ  MLSRVAAVK o  3 ip -99 il -99 dp -99 dl -99    Peplist sS  4.564 bgG   1 bgS  3.827 cS  1.502
+G  0   45 QRIRSPRTLNAWVNYVAT  RTLNAWVNY o  6 ip -99 il -99 dp -99 dl -99    Peplist sS 11.015 bgG   1 bgS  9.678 cS  3.272
+G  0   46 GDGGTRVAVNKSNKQRHS  VAVNKSNKQ o  6 ip -99 il -99 dp -99 dl -99    Peplist sS  4.056 bgG  -1 bgS  0.000 cS  4.056
+G  0   47       RQFVSNNGKVPH  RQFVSNNGK o  0 ip -99 il -99 dp -99 dl -99    Peplist sS  4.227 bgG   1 bgS  1.135 cS  3.319
+G  0   48      VEKLSSMAAERRG  KLSSMAAER o  2 ip -99 il -99 dp -99 dl -99    Peplist sS  5.832 bgG   1 bgS  1.353 cS  4.749
+G  0   49      DIKDAVYSICKFY  AVYSICKFY o  4 ip -99 il -99 dp -99 dl -99    Peplist sS  8.183 bgG  -1 bgS  0.000 cS  8.183
+G  0   50     IWLKLAIFQASMTK  AIFQASMTK o  5 ip -99 il -99 dp -99 dl -99    Peplist sS 13.517 bgG   1 bgS  5.506 cS  9.112
+G  0   51   QVGTGVSENIFLKWPP  VSENIFLKW o  5 ip -99 il -99 dp -99 dl -99    Peplist sS  5.833 bgG  -1 bgS  0.000 cS  5.833
+G  0   52          YIFFASFYY  YIFFASFYY o  0 ip -99 il -99 dp -99 dl -99    Peplist sS 13.430 bgG   1 bgS  2.175 cS 11.690
+G  0   53        RTLHPFGCKSN  RTLHPFGCK o  0 ip -99 il -99 dp -99 dl -99    Peplist sS  5.633 bgG  -1 bgS  0.000 cS  5.633
+G  0   54        TDKLYGLSQGY  KLYGLSQGY o  2 ip -99 il -99 dp -99 dl -99    Peplist sS  5.796 bgG  -1 bgS  0.000 cS  5.796
+G  0   55 ILLFYCPQKKKSQAEFWD  LFYCPQKKK o  2 ip -99 il -99 dp -99 dl -99    Peplist sS  8.481 bgG   1 bgS  4.355 cS  4.997
+G  0   56        CIMFEQYFIYW  MFEQYFIYW o  2 ip -99 il -99 dp -99 dl -99    Peplist sS  9.738 bgG   1 bgS  0.448 cS  9.379
+G  0   57    YIDQMCVFKFIVAKS  YIDQMCVFK o  0 ip -99 il -99 dp -99 dl -99    Peplist sS 11.994 bgG   1 bgS  1.792 cS 10.561
+G  0   58   TMCIYQSPVRKLKLAC  CIYQSPVRK o  2 ip -99 il -99 dp -99 dl -99    Peplist sS  9.170 bgG   1 bgS  4.495 cS  5.574
+G  0   59    NEGCQLTYRHKVVKS  TYRHKVVKS o  6 ip -99 il -99 dp -99 dl -99    Peplist sS  6.248 bgG   1 bgS  4.891 cS  2.335
+G  0   60   GYHNSPASFFSSWVQA  YHNSPASFF o  1 ip -99 il -99 dp -99 dl -99    Peplist sS  5.341 bgG   1 bgS  4.962 cS  1.372
+G  0   61      RIYCQENPYNNVD  RIYCQENPY o  0 ip -99 il -99 dp -99 dl -99    Peplist sS 10.778 bgG  -1 bgS  0.000 cS 10.778
+G  0   62    SLPRRWFFRPLRKPY  RWFFRPLRK o  4 ip -99 il -99 dp -99 dl -99    Peplist sS 10.700 bgG   1 bgS  9.158 cS  3.374
+G  0   63  DLFFWYTNEIIGYKVAL  WYTNEIIGY o  4 ip -99 il -99 dp -99 dl -99    Peplist sS  9.392 bgG   1 bgS  1.172 cS  8.454
+G  0   64  HQPHRVMANNVKKDIII  RVMANNVKK o  4 ip -99 il -99 dp -99 dl -99    Peplist sS  8.804 bgG   1 bgS  1.555 cS  7.560
+G  0   65    TYKCLAVFKDSFLRG  TYKCLAVFK o  0 ip -99 il -99 dp -99 dl -99    Peplist sS  8.353 bgG   1 bgS  1.530 cS  7.129
+G  0   66  LYDSFTYLCGFIKSLCC  TYLCGFIKS o  5 ip -99 il -99 dp -99 dl -99    Peplist sS  6.278 bgG   1 bgS  0.053 cS  6.235
+G  0   67 PIDPYVVMQVKVPKIRIF  VVMQVKVPK o  5 ip -99 il -99 dp -99 dl -99    Peplist sS  7.291 bgG   1 bgS  2.083 cS  5.625
+G  0   68  GYKLVTSSGAIYKIYWM  VTSSGAIYK o  4 ip -99 il -99 dp -99 dl -99    Peplist sS 11.328 bgG   1 bgS  2.469 cS  9.353
+G  0   69      DLKVLSHGWAYKA  VLSHGWAYK o  3 ip -99 il -99 dp -99 dl -99    Peplist sS 10.852 bgG  -1 bgS  0.000 cS 10.852
+G  0   70     ARSRLVSLALHKDN  RLVSLALHK o  3 ip -99 il -99 dp -99 dl -99    Peplist sS  9.705 bgG   1 bgS  6.524 cS  4.486
+G  0   71         CKVFFGPIYY  KVFFGPIYY o  1 ip -99 il -99 dp -99 dl -99    Peplist sS 11.893 bgG   1 bgS  0.205 cS 11.728
+G  0   72      FMKLAETRMGYMR  KLAETRMGY o  2 ip -99 il -99 dp -99 dl -99    Peplist sS  5.750 bgG   1 bgS  4.828 cS  1.887
+G  0   73    SFIDLIVFNLPVSKM  IVFNLPVSK o  5 ip -99 il -99 dp -99 dl -99    Peplist sS 11.676 bgG   1 bgS  0.807 cS 11.030
+G  0   74 SGTNIILAHFLYKEFTMN  IILAHFLYK o  4 ip -99 il -99 dp -99 dl -99    Peplist sS 10.333 bgG   1 bgS  1.200 cS  9.373
+G  0   75       EINEWLSSKDRR  INEWLSSKD o  1 ip -99 il -99 dp -99 dl -99    Peplist sS -0.056 bgG  -1 bgS  0.000 cS -0.056
+G  0   76    GVFKMGAFMYTKTYD  FKMGAFMYT o  2 ip -99 il -99 dp -99 dl -99    Peplist sS  4.190 bgG   1 bgS  1.411 cS  3.061
+G  0   77         IMQFKLGIPK  MQFKLGIPK o  1 ip -99 il -99 dp -99 dl -99    Peplist sS  8.994 bgG  -1 bgS  0.000 cS  8.994
+G  0   78         VAMSTWSFYH  VAMSTWSFY o  0 ip -99 il -99 dp -99 dl -99    Peplist sS  5.582 bgG   1 bgS  4.666 cS  1.849
+G  0   79        YMFESKSMKTH  MFESKSMKT o  1 ip -99 il -99 dp -99 dl -99    Peplist sS 10.420 bgG   1 bgS  0.733 cS  9.834
+G  0   80   ICFRVYINVVVKLFYE  RVYINVVVK o  3 ip -99 il -99 dp -99 dl -99    Peplist sS  5.758 bgG   1 bgS  0.295 cS  5.522
+G  0   81          AVLQSGFRK  AVLQSGFRK o  0 ip -99 il -99 dp -99 dl -99    Peplist sS  4.839 bgG  -1 bgS  0.000 cS  4.839
+G  0   82         LAIFQSAMTK  AIFQSAMTK o  1 ip -99 il -99 dp -99 dl -99    Peplist sS 13.179 bgG  -1 bgS  0.000 cS 13.179
+G  0   83    GRSIAMLKSKRDALQ  RSIAMLKSK o  1 ip -99 il -99 dp -99 dl -99    Peplist sS  5.084 bgG   1 bgS  2.689 cS  2.932
+G  0   84   SDCDQMVIENGILKNK  MVIENGILK o  5 ip -99 il -99 dp -99 dl -99    Peplist sS  3.794 bgG  -1 bgS  0.000 cS  3.794
+G  0   85       PAAYYFMKFRYL  YYFMKFRYL o  3 ip -99 il -99 dp -99 dl -99    Peplist sS  8.658 bgG   1 bgS  6.619 cS  3.363
+G  0   86      AFGRTLNLFRYKW  RTLNLFRYK o  3 ip -99 il -99 dp -99 dl -99    Peplist sS 11.006 bgG  -1 bgS  0.000 cS 11.006
+G  0   87       GWRNQPAATALT  WRNQPAATA o  1 ip -99 il -99 dp -99 dl -99    Peplist sS  5.795 bgG   1 bgS  5.537 cS  1.366
+G  0   88 HLVNAISRLRTQKANSIC  LRTQKANSI o  8 ip -99 il -99 dp -99 dl -99    Peplist sS  3.944 bgG   1 bgS  1.354 cS  2.860
+G  0   89      KYLYLWSFKPTMQ  KYLYLWSFK o  0 ip -99 il -99 dp -99 dl -99    Peplist sS 10.629 bgG   1 bgS  1.469 cS  9.454
+G  0   90     EIYALLAVGATKGA  IYALLAVGA o  1 ip -99 il -99 dp -99 dl -99    Peplist sS  1.161 bgG  -1 bgS  0.000 cS  1.161
+G  0   91 ANHVGALKISQLQKNFPP  KISQLQKNF o  7 ip -99 il -99 dp -99 dl -99    Peplist sS  6.114 bgG   1 bgS  3.015 cS  3.702
+G  0   92      YQIRTFNEDLFRD  RTFNEDLFR o  3 ip -99 il -99 dp -99 dl -99    Peplist sS  6.924 bgG   1 bgS  2.914 cS  4.593
+## Sequence alignment for group 1
+G  1    0          RARIKTRLF  RARIKTRLF o  0 ip -99 il -99 dp -99 dl -99    Peplist sS  6.565 bgG  -1 bgS  0.000 cS  6.565
+G  1    1   EDFLPVNVAFELAPKW  LPVNVAFEL o  3 ip -99 il -99 dp -99 dl -99    Peplist sS  8.281 bgG   0 bgS  7.265 cS  2.469
+G  1    2       PAIPSIQSRGLI  IPSIQSRGL o  2 ip -99 il -99 dp -99 dl -99    Peplist sS 12.953 bgG  -1 bgS  0.000 cS 12.953
+G  1    3     GWSDLPPFTQHLLG  LPPFTQHLL o  4 ip -99 il -99 dp -99 dl -99    Peplist sS 12.943 bgG   0 bgS  4.142 cS  9.629
+G  1    4    VFIGFPPGTSLTISD  FPPGTSLTI o  4 ip -99 il -99 dp -99 dl -99    Peplist sS  8.840 bgG   0 bgS  0.510 cS  8.432
+G  1    5        IAPLLSAGIFH  APLLSAGIF o  1 ip -99 il -99 dp -99 dl -99    Peplist sS  7.169 bgG   0 bgS  3.021 cS  4.752
+G  1    6   KTKPFRMVSLVGCWNA  KPFRMVSLV o  2 ip -99 il -99 dp -99 dl -99    Peplist sS  4.886 bgG   0 bgS  4.201 cS  1.525
+G  1    7  QRFYPIVIAPAMNEDSH  YPIVIAPAM o  3 ip -99 il -99 dp -99 dl -99    Peplist sS 10.018 bgG   0 bgS  5.518 cS  5.604
+G  1    8   RTMSGLPAIVREAIEE  LPAIVREAI o  5 ip -99 il -99 dp -99 dl -99    Peplist sS 12.529 bgG   0 bgS  3.117 cS 10.036
+G  1    9       MRPFNNILNLSQ  RPFNNILNL o  1 ip -99 il -99 dp -99 dl -99    Peplist sS  5.447 bgG   0 bgS  0.864 cS  4.755
+G  1   10   QCRFPASFFIKLFPFM  FPASFFIKL o  3 ip -99 il -99 dp -99 dl -99    Peplist sS  9.734 bgG   0 bgS  5.400 cS  5.415
+G  1   11 DCVHHSPGEIKPKFDEGW  SPGEIKPKF o  5 ip -99 il -99 dp -99 dl -99    Peplist sS  5.910 bgG   0 bgS  1.549 cS  4.670
+G  1   12        RPNITSTALSV  RPNITSTAL o  0 ip -99 il -99 dp -99 dl -99    Peplist sS 14.721 bgG   0 bgS  0.852 cS 14.039
+G  1   13   RKGSMLPQIGGEAIKY  LPQIGGEAI o  5 ip -99 il -99 dp -99 dl -99    Peplist sS 11.339 bgG   0 bgS  5.192 cS  7.185
+G  1   14     LAGLPYPQPQPFML  YPQPQPFML o  5 ip -99 il -99 dp -99 dl -99    Peplist sS 10.812 bgG   0 bgS  1.352 cS  9.730
+G  1   15  NEKRLPAGSRIWLGPLA  LPAGSRIWL o  4 ip -99 il -99 dp -99 dl -99    Peplist sS 12.184 bgG   0 bgS  5.004 cS  8.181
+G  1   16       QIPAFYTPTARV  IPAFYTPTA o  1 ip -99 il -99 dp -99 dl -99    Peplist sS  8.647 bgG  -1 bgS  0.000 cS  8.647
+G  1   17     VNSPADERAVANFW  SPADERAVA o  2 ip -99 il -99 dp -99 dl -99    Peplist sS  6.185 bgG  -1 bgS  0.000 cS  6.185
+G  1   18  LVPKLMEEYLRRMDSVK  VPKLMEEYL o  1 ip -99 il -99 dp -99 dl -99    Peplist sS 11.769 bgG   0 bgS  4.840 cS  7.897
+G  1   19 ESYSLPRPDTRHLHVWLN  LPRPDTRHL o  4 ip -99 il -99 dp -99 dl -99    Peplist sS 16.823 bgG   0 bgS  2.962 cS 14.453
+G  1   20    CTVHQLPAIIRPSFW  LPAIIRPSF o  5 ip -99 il -99 dp -99 dl -99    Peplist sS 12.417 bgG   0 bgS  2.146 cS 10.700
+G  1   21     RPPIFIRRLPSCHN  RPPIFIRRL o  0 ip -99 il -99 dp -99 dl -99    Peplist sS 13.800 bgG   0 bgS  2.764 cS 11.589
+G  1   22    ALANMTDAIRTLKKH  NMTDAIRTL o  3 ip -99 il -99 dp -99 dl -99    Peplist sS  1.367 bgG   0 bgS  0.627 cS  0.865
+G  1   23       NELPNVDLTTMM  LPNVDLTTM o  2 ip -99 il -99 dp -99 dl -99    Peplist sS  8.395 bgG  -1 bgS  0.000 cS  8.395
+G  1   24     CMYTRVYRRRLAQS  YTRVYRRRL o  2 ip -99 il -99 dp -99 dl -99    Peplist sS 11.574 bgG   0 bgS  6.138 cS  6.663
+G  1   25         HPSDGKCNLN  HPSDGKCNL o  0 ip -99 il -99 dp -99 dl -99    Peplist sS  6.961 bgG  -1 bgS  0.000 cS  6.961
+G  1   26   WHPAQLFKPLTKKFMD  HPAQLFKPL o  1 ip -99 il -99 dp -99 dl -99    Peplist sS 14.859 bgG   0 bgS  6.603 cS  9.577
+G  1   27    GSYGPATAQMALPDY  GPATAQMAL o  3 ip -99 il -99 dp -99 dl -99    Peplist sS 11.399 bgG   0 bgS  5.061 cS  7.350
+G  1   28    NHCRPRQIAMSLFIM  RPRQIAMSL o  3 ip -99 il -99 dp -99 dl -99    Peplist sS 15.291 bgG   0 bgS  4.300 cS 11.850
+G  1   29 MYMVYVPHVIEEVMRLSL  VPHVIEEVM o  5 ip -99 il -99 dp -99 dl -99    Peplist sS  6.597 bgG   0 bgS  1.933 cS  5.050
+G  1   30    GLPTRCRLEIVHGMG  LPTRCRLEI o  1 ip -99 il -99 dp -99 dl -99    Peplist sS  6.084 bgG  -1 bgS  0.000 cS  6.084
+G  1   31       LLPTNAVVKMKK  LPTNAVVKM o  1 ip -99 il -99 dp -99 dl -99    Peplist sS  8.174 bgG   0 bgS  5.043 cS  4.140
+G  1   32 HIHIHPLARTAKVAQSYC  HPLARTAKV o  4 ip -99 il -99 dp -99 dl -99    Peplist sS  6.482 bgG   0 bgS  5.186 cS  2.334
+G  1   33 INSNDFPVRPQVPITRCCC  FPVRPQVPI o  5 ip -99 il -99 dp -99 dl -99    Peplist sS 14.429 bgG   0 bgS  6.599 cS  9.150
+G  1   34    MKSMNLPEFERRTLQ  LPEFERRTL o  5 ip -99 il -99 dp -99 dl -99    Peplist sS 15.408 bgG   0 bgS  2.659 cS 13.281
+G  1   35          APALATGSF  APALATGSF o  0 ip -99 il -99 dp -99 dl -99    Peplist sS  8.192 bgG  -1 bgS  0.000 cS  8.192
+G  1   36      QRHDTLARSICEK  RHDTLARSI o  1 ip -99 il -99 dp -99 dl -99    Peplist sS -0.476 bgG   0 bgS  0.356 cS -0.761
+G  1   37  EWSRTGTRLLGRKRMTS  WSRTGTRLL o  1 ip -99 il -99 dp -99 dl -99    Peplist sS  9.318 bgG   0 bgS  1.874 cS  7.819
+G  1   38      IKRQGSTPLWNQA  IKRQGSTPL o  0 ip -99 il -99 dp -99 dl -99    Peplist sS  8.178 bgG   0 bgS  0.872 cS  7.481
+G  1   39         KLRETGAPLP  KLRETGAPL o  0 ip -99 il -99 dp -99 dl -99    Peplist sS  5.527 bgG  -1 bgS  0.000 cS  5.527
+G  1   40       KLAQVRRAMCAD  KLAQVRRAM o  0 ip -99 il -99 dp -99 dl -99    Peplist sS  6.751 bgG  -1 bgS  0.000 cS  6.751
+G  1   41       ATRIPLGGNGAM  IPLGGNGAM o  3 ip -99 il -99 dp -99 dl -99    Peplist sS  7.164 bgG   0 bgS  0.973 cS  6.386
+G  1   42     LRPQASGVYMSADT  RPQASGVYM o  1 ip -99 il -99 dp -99 dl -99    Peplist sS 11.960 bgG   0 bgS  5.092 cS  7.886
+G  1   43     SFLPRRSLKAFDSK  LPRRSLKAF o  2 ip -99 il -99 dp -99 dl -99    Peplist sS 13.579 bgG   0 bgS  5.695 cS  9.023
+G  1   44        CPIGENSPLQK  CPIGENSPL o  0 ip -99 il -99 dp -99 dl -99    Peplist sS  9.706 bgG   0 bgS  4.685 cS  5.958
+G  1   45         HPAAMPHLLN  HPAAMPHLL o  0 ip -99 il -99 dp -99 dl -99    Peplist sS 11.413 bgG  -1 bgS  0.000 cS 11.413
+G  1   46  LNWTVWNRLIARKLQWT  WNRLIARKL o  5 ip -99 il -99 dp -99 dl -99    Peplist sS  8.760 bgG   0 bgS  6.500 cS  3.560
+G  1   47      KEDLAWQRTLKLS  EDLAWQRTL o  1 ip -99 il -99 dp -99 dl -99    Peplist sS  3.998 bgG   0 bgS  1.307 cS  2.953
+G  1   48      NWPALSSIAATKP  WPALSSIAA o  1 ip -99 il -99 dp -99 dl -99    Peplist sS 10.690 bgG   0 bgS  5.359 cS  6.403
+G  1   49 EMQHRFPIAKVEPVQKQK  FPIAKVEPV o  5 ip -99 il -99 dp -99 dl -99    Peplist sS  9.385 bgG   0 bgS  4.006 cS  6.181
+G  1   50         RERLSRMAIK  RERLSRMAI o  0 ip -99 il -99 dp -99 dl -99    Peplist sS  6.986 bgG  -1 bgS  0.000 cS  6.986
+G  1   51       YPSLMSRVVAVM  YPSLMSRVV o  0 ip -99 il -99 dp -99 dl -99    Peplist sS 13.869 bgG  -1 bgS  0.000 cS 13.869
+G  1   52       SPRWYFYYLWCF  SPRWYFYYL o  0 ip -99 il -99 dp -99 dl -99    Peplist sS 11.299 bgG   0 bgS  4.156 cS  7.974
+G  1   53   RGRIYKRSLKLDDLLS  RGRIYKRSL o  0 ip -99 il -99 dp -99 dl -99    Peplist sS 10.934 bgG   0 bgS  9.367 cS  3.441
+G  1   54    MWFTFPVRPQVPHTG  FPVRPQVPH o  4 ip -99 il -99 dp -99 dl -99    Peplist sS 12.381 bgG   0 bgS  6.764 cS  6.970
+G  1   55      HIRLHQQALGCAQ  HIRLHQQAL o  0 ip -99 il -99 dp -99 dl -99    Peplist sS  5.388 bgG   0 bgS  3.785 cS  2.360
+G  1   56      GTEDAPKRPPSAF  APKRPPSAF o  4 ip -99 il -99 dp -99 dl -99    Peplist sS  8.934 bgG  -1 bgS  0.000 cS  8.934
+G  1   57     TQAMRAPKVRLSLW  AMRAPKVRL o  2 ip -99 il -99 dp -99 dl -99    Peplist sS  4.039 bgG   0 bgS  1.556 cS  2.794
+G  1   58 FFVACAPFMSDLQFPMTWH  FMSDLQFPM o  7 ip -99 il -99 dp -99 dl -99    Peplist sS  7.595 bgG   0 bgS  2.819 cS  5.340
+G  1   59     VMADPIPRRNVATL  IPRRNVATL o  5 ip -99 il -99 dp -99 dl -99    Peplist sS 12.567 bgG   0 bgS  0.980 cS 11.783
+G  1   60 ECCGVPWSKILAYNADPI  CGVPWSKIL o  2 ip -99 il -99 dp -99 dl -99    Peplist sS  4.049 bgG   0 bgS  0.683 cS  3.503
+G  1   61        RPVPISHLYIL  RPVPISHLY o  0 ip -99 il -99 dp -99 dl -99    Peplist sS 10.066 bgG  -1 bgS  0.000 cS 10.066
+G  1   62       MHLAAAQGQAPL  AAAQGQAPL o  3 ip -99 il -99 dp -99 dl -99    Peplist sS  6.938 bgG   0 bgS  3.436 cS  4.189
+G  1   63       KPNELSLALSEG  KPNELSLAL o  0 ip -99 il -99 dp -99 dl -99    Peplist sS  9.533 bgG  -1 bgS  0.000 cS  9.533
+G  1   64   LHDIVRTNRNELLLMK  IVRTNRNEL o  3 ip -99 il -99 dp -99 dl -99    Peplist sS  2.989 bgG   0 bgS  0.198 cS  2.830
+G  1   65        MPTDGLVGFCF  MPTDGLVGF o  0 ip -99 il -99 dp -99 dl -99    Peplist sS  5.450 bgG  -1 bgS  0.000 cS  5.450
+G  1   66      NWCIPKRNRSILP  IPKRNRSIL o  3 ip -99 il -99 dp -99 dl -99    Peplist sS 12.126 bgG   0 bgS  2.308 cS 10.279
+G  1   67     FWNAKPLKDVERLT  KPLKDVERL o  4 ip -99 il -99 dp -99 dl -99    Peplist sS  6.721 bgG   0 bgS  6.671 cS  1.385
+G  1   68   EWTPVMSRFAAWIIPE  TPVMSRFAA o  2 ip -99 il -99 dp -99 dl -99    Peplist sS  9.166 bgG   0 bgS  6.006 cS  4.362
+G  1   69     AHWNYFPAPRAETL  FPAPRAETL o  5 ip -99 il -99 dp -99 dl -99    Peplist sS 13.127 bgG   0 bgS  6.355 cS  8.042
+G  1   70    HEALDGTFQRKYMAF  LDGTFQRKY o  3 ip -99 il -99 dp -99 dl -99    Peplist sS  4.253 bgG   0 bgS  1.907 cS  2.727
+G  1   71   IEITPFGQQRVFYIYW  TPFGQQRVF o  3 ip -99 il -99 dp -99 dl -99    Peplist sS 11.068 bgG   0 bgS  3.365 cS  8.376
+G  1   72    TCIPTFLQEALYHKF  IPTFLQEAL o  2 ip -99 il -99 dp -99 dl -99    Peplist sS 13.910 bgG   0 bgS  7.298 cS  8.072
+G  1   73   VAVCGLPQYFTFDLKC  LPQYFTFDL o  5 ip -99 il -99 dp -99 dl -99    Peplist sS  9.471 bgG   0 bgS  1.586 cS  8.202
+G  1   74     FFPPTSFGPLPAWD  FPPTSFGPL o  1 ip -99 il -99 dp -99 dl -99    Peplist sS 12.577 bgG   0 bgS  4.065 cS  9.325
+G  1   75    KFVNSPLQLRFRMII  SPLQLRFRM o  4 ip -99 il -99 dp -99 dl -99    Peplist sS 11.287 bgG   0 bgS  1.737 cS  9.897
+G  1   76   FTEAQPKPGTRMVPCT  QPKPGTRMV o  4 ip -99 il -99 dp -99 dl -99    Peplist sS 10.316 bgG   0 bgS  1.629 cS  9.013
+G  1   77       VPHISRQRLPWL  VPHISRQRL o  0 ip -99 il -99 dp -99 dl -99    Peplist sS 11.812 bgG   0 bgS  6.869 cS  6.317
+G  1   78     RPNRQLGSMHTSKY  RPNRQLGSM o  0 ip -99 il -99 dp -99 dl -99    Peplist sS  8.391 bgG   0 bgS  1.821 cS  6.935
+G  1   79   WCDQLPLMMLSPLLDK  LPLMMLSPL o  4 ip -99 il -99 dp -99 dl -99    Peplist sS 12.264 bgG   0 bgS  6.348 cS  7.185
+G  1   80  TRPLRMPAYIRNTLYQA  MPAYIRNTL o  5 ip -99 il -99 dp -99 dl -99    Peplist sS 13.525 bgG   0 bgS  3.889 cS 10.413
+G  1   81     WQGIKLRHGQRSLF  KLRHGQRSL o  4 ip -99 il -99 dp -99 dl -99    Peplist sS  7.291 bgG   0 bgS  0.634 cS  6.784
+G  1   82    WRDIPFSEGKALWKN  IPFSEGKAL o  3 ip -99 il -99 dp -99 dl -99    Peplist sS  8.714 bgG   0 bgS  6.255 cS  3.710
+G  1   83    SPNMSLLRDNRAALL  LLRDNRAAL o  5 ip -99 il -99 dp -99 dl -99    Peplist sS  7.096 bgG  -1 bgS  0.000 cS  7.096
+G  1   84      QNPANKEESIHCI  NPANKEESI o  1 ip -99 il -99 dp -99 dl -99    Peplist sS  6.347 bgG  -1 bgS  0.000 cS  6.347
+G  1   85     RHLTPKFTRMVVSN  TPKFTRMVV o  3 ip -99 il -99 dp -99 dl -99    Peplist sS  9.634 bgG   0 bgS  4.501 cS  6.033
+G  1   86  CLKDIIGPMFSGKVLDE  GPMFSGKVL o  6 ip -99 il -99 dp -99 dl -99    Peplist sS  6.279 bgG   0 bgS  2.995 cS  3.883
+G  1   87   REFPSIFSTEVHSVAG  FPSIFSTEV o  2 ip -99 il -99 dp -99 dl -99    Peplist sS 10.728 bgG   0 bgS  4.265 cS  7.316
+G  1   88       PCYKPESRPFDL  CYKPESRPF o  1 ip -99 il -99 dp -99 dl -99    Peplist sS  6.886 bgG   0 bgS  0.785 cS  6.258
+G  1   89    DDEDYAPIMFSNKMC  APIMFSNKM o  5 ip -99 il -99 dp -99 dl -99    Peplist sS 10.075 bgG   0 bgS  4.435 cS  6.527
+G  1   90    LEHPIMYYTKFMLFT  HPIMYYTKF o  2 ip -99 il -99 dp -99 dl -99    Peplist sS 10.984 bgG   0 bgS 11.042 cS  2.151
+G  1   91   FAGALIRATSTRIGDG  LIRATSTRI o  4 ip -99 il -99 dp -99 dl -99    Peplist sS  4.352 bgG   0 bgS  3.637 cS  1.442
+G  1   92   HMSGVAMPNLYKLIYH  MPNLYKLIY o  6 ip -99 il -99 dp -99 dl -99    Peplist sS  7.259 bgG   0 bgS  5.553 cS  2.817
+G  1   93          MPREDAHFI  MPREDAHFI o  0 ip -99 il -99 dp -99 dl -99    Peplist sS  7.991 bgG  -1 bgS  0.000 cS  7.991
+G  1   94  YNSYGVYSVFYLYLCLT  YGVYSVFYL o  3 ip -99 il -99 dp -99 dl -99    Peplist sS  4.043 bgG   0 bgS  3.229 cS  1.460
+G  1   95     DFDNQRPNMSRHHF  RPNMSRHHF o  5 ip -99 il -99 dp -99 dl -99    Peplist sS 13.370 bgG   0 bgS  3.056 cS 10.925
+G  1   96    FPKYTMKPHTFNKCY  FPKYTMKPH o  0 ip -99 il -99 dp -99 dl -99    Peplist sS  9.314 bgG   0 bgS  4.167 cS  5.981
+G  1   97    KNQNGVYPSFMSRPH  YPSFMSRPH o  6 ip -99 il -99 dp -99 dl -99    Peplist sS 16.123 bgG   0 bgS  5.212 cS 11.953
+G  1   98     HEPVYPGIKVRQLT  YPGIKVRQL o  4 ip -99 il -99 dp -99 dl -99    Peplist sS 10.073 bgG   0 bgS  2.030 cS  8.449
+G  1   99   PTVACPKVSFEPIYSM  CPKVSFEPI o  4 ip -99 il -99 dp -99 dl -99    Peplist sS 13.093 bgG   0 bgS  7.622 cS  6.996
+G  1  100          FPRGQGVPI  FPRGQGVPI o  0 ip -99 il -99 dp -99 dl -99    Peplist sS 13.425 bgG  -1 bgS  0.000 cS 13.425
+G  1  101    VISPEQTQTYNIGKF  SPEQTQTYN o  2 ip -99 il -99 dp -99 dl -99    Peplist sS  6.748 bgG   0 bgS  0.721 cS  6.171
+G  1  102   AHRDCLPTWLGAAIEW  LPTWLGAAI o  5 ip -99 il -99 dp -99 dl -99    Peplist sS  8.991 bgG   0 bgS  8.740 cS  2.000
+G  1  103     CDAIITPVVFYRWM  TPVVFYRWM o  5 ip -99 il -99 dp -99 dl -99    Peplist sS 10.148 bgG   0 bgS  7.513 cS  4.138
+G  1  104     CFRLSLYGRYNCKC  RLSLYGRYN o  2 ip -99 il -99 dp -99 dl -99    Peplist sS  3.112 bgG   0 bgS  3.332 cS  0.446
+G  1  105     SQIQAWPLLPHVIF  WPLLPHVIF o  5 ip -99 il -99 dp -99 dl -99    Peplist sS  7.081 bgG   0 bgS  5.762 cS  2.472
+G  1  106     WAPSPYNSRFCAGW  APSPYNSRF o  1 ip -99 il -99 dp -99 dl -99    Peplist sS 10.814 bgG   0 bgS  7.245 cS  5.018
+# group 0, size 93: Final KLD sum after 40000 epochs - 5.731604
+# group 1, size 107: Final KLD sum after 40000 epochs - 6.787150
+#
+# Final number of non-empty clusters: 2
+
+### Final KLD sum after 40000 iterations: 6.296321
