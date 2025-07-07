@@ -11,10 +11,16 @@ from matplotlib.patches import Patch
 # import rpy2.robjects as ro
 from pydeseq2.dds import DeseqDataSet
 from pydeseq2.ds import DeseqStats
-GIBS_CLUSTER_BIN = "gibbscluster-2.0/gibbscluster"
 
 
-def group_by_peptide(df:pd.DataFrame, n_samples:int, pattern, out_dir):
+# get the rute from the current file
+CURRENT_DIR = os.path.join("/".join(os.path.dirname(__file__).split("/")[:-1]))
+
+GIBS_CLUSTER_BIN = os.path.join(CURRENT_DIR, "gibbscluster-2.0/gibbscluster")
+
+
+
+def group_by_peptide(df:pd.DataFrame, conditions, pattern):
     """
     Groups peptides based on a given pattern(the library peptide form) and aggregates their counts.
 
@@ -41,7 +47,10 @@ def group_by_peptide(df:pd.DataFrame, n_samples:int, pattern, out_dir):
     """
 
     # Add a column for the total count across specific columns
-    df["Total Count"] = df.iloc[:, 1:n_samples].sum(axis=1)
+
+    # WARNNIG: THE PEPTIDE COLUMN MUST BE NAMED 'peptide' IN THE INPUT DATAFRAME
+    df = df[["peptide"] + list(conditions.keys())].copy()
+    df["Total Count"] = df[conditions.keys()].sum(axis=1)
 
     # Calculate total peptides and valid peptides
     total_peptides = df["Total Count"].sum()
@@ -49,12 +58,18 @@ def group_by_peptide(df:pd.DataFrame, n_samples:int, pattern, out_dir):
     valid_peptides = df.loc[df["Consistent"], "Total Count"].sum()
 
     # Print results
-    print(f"Total peptides: {total_peptides}")
-    print(f"Valid peptides: {valid_peptides}")
-    print(f"Success rate: {100 * valid_peptides / total_peptides:.2f}%")
+
+    
+    summary = {
+        "Total Peptides": total_peptides,
+        "Valid Peptides": valid_peptides,
+        "Success Rate": f"{100 * valid_peptides / total_peptides:.2f}%"
+    }
+
 
     # Extract the clean peptide matching the pattern
     df["Clean Peptide"] = df['peptide'].astype(str).str.extract(f"({pattern})", expand=False)
+    df["Clean Peptide"] = df['Clean Peptide'].astype(str).str.replace("*", "Q")
 
     # Aggregate by clean peptide and sort
     df_grouped = df.groupby("Clean Peptide", as_index=False).sum(numeric_only=True)
@@ -65,10 +80,7 @@ def group_by_peptide(df:pd.DataFrame, n_samples:int, pattern, out_dir):
     # Drop unnecessary column
     df_grouped = df_grouped.drop(columns=["Consistent"], errors='ignore')
 
-    # Save cleaned dataset
-    df_grouped.to_csv(out_dir)
-
-    return df_grouped
+    return df_grouped, summary
 
 def plot_histograms(df_before, df_after) -> plt.Figure:
     """
@@ -91,42 +103,43 @@ def plot_histograms(df_before, df_after) -> plt.Figure:
     axes[0, 1].legend()
 
     # CPM Control
-    sns.histplot(df_before["CPM_Control"], bins=50, color="blue", alpha=0.5, label="Before", ax=axes[1, 0], log_scale=True)
-    sns.histplot(df_after["CPM_Control"], bins=50, color="red", alpha=0.5, label="After", ax=axes[1, 0], log_scale=True)
+    sns.histplot(df_before["Control CPM"], bins=50, color="blue", alpha=0.5, label="Before", ax=axes[1, 0], log_scale=True)
+    sns.histplot(df_after["Control CPM"], bins=50, color="red", alpha=0.5, label="After", ax=axes[1, 0], log_scale=True)
     axes[1, 0].set_title("CPM Control Distribution")
     axes[1, 0].legend()
 
     # CPM Experiment
-    sns.histplot(df_before["CPM_Exp"], bins=50, color="blue", alpha=0.5, label="Before", ax=axes[1, 1], log_scale=True)
-    sns.histplot(df_after["CPM_Exp"], bins=50, color="red", alpha=0.5, label="After", ax=axes[1, 1], log_scale=True)
+    sns.histplot(df_before["Experiment CPM"], bins=50, color="blue", alpha=0.5, label="Before", ax=axes[1, 1], log_scale=True)
+    sns.histplot(df_after["Experiment CPM"], bins=50, color="red", alpha=0.5, label="After", ax=axes[1, 1], log_scale=True)
     axes[1, 1].set_title("CPM Experiment Distribution")
     axes[1, 1].legend()
 
     plt.tight_layout()
     return fig
 
-def filter_by_CPM(df: pd.DataFrame, threshold_1=None, threshold_2=None, plot=False) -> tuple[pd.DataFrame, plt.Figure | None]:
+def filter_by_CPM(df: pd.DataFrame,conditions: dict, threshold_1=None, threshold_2=None, plot=False) -> tuple[pd.DataFrame, plt.Figure | None]:
     """
     Filters peptides based on CPM thresholds and returns filtered dataframe + histogram figure.
     """
-    control_cols = [col for col in df.columns if 'Control' in col]
-    experiment_cols = [col for col in df.columns if 'Experiment' in col]
+
+    control_cols = [col for col, value in conditions.items() if value == "Control" and col in df.columns]
+    experiment_cols = [col for col, value in conditions.items() if value == "Experiment" and col in df.columns]
 
     df["Control Count"] = df[control_cols].sum(axis=1)
     df["Experiment Count"] = df[experiment_cols].sum(axis=1)
 
     total_ctrl, total_exp = df["Control Count"].sum(), df["Experiment Count"].sum()
-    df["CPM_Control"] = (df["Control Count"] / total_ctrl * 1e6) if total_ctrl > 0 else 0
-    df["CPM_Exp"] = (df["Experiment Count"] / total_exp * 1e6) if total_exp > 0 else 0
+    df["Control CPM"] = (df["Control Count"] / total_ctrl * 1e6) if total_ctrl > 0 else 0
+    df["Experiment CPM"] = (df["Experiment Count"] / total_exp * 1e6) if total_exp > 0 else 0
 
     df_before = df.copy()
     if threshold_1 is not None:
         df = df[df["Experiment Count"] > threshold_1]
     if threshold_2 is not None:
-        df = df[df["CPM_Exp"] > threshold_2]
+        df = df[df["Experiment CPM"] > threshold_2]
 
     df = df.reset_index(drop=True)
-    df["Clean Peptide"] = df["Clean Peptide"].str.replace("*", "Q", regex=False) if "Clean Peptide" in df else df.get("Clean Peptide")
+    
 
     fig = plot_histograms(df_before, df) if plot else None
     return df, fig
@@ -164,12 +177,13 @@ def prepare_data(df:pd.DataFrame, columns_condition:dict):
     tuple: (count_data, meta_data) where count_data contains expression values and meta_data contains sample conditions.
     """
     DE_df = df[["Clean Peptide"] + 
-                          [col for col in df.columns if col.startswith("Experiment")] + 
-                          [col for col in df.columns if col.startswith("Control")]]
+                          [col for col in df.columns if columns_condition.get(col) in ["Control", "Experiment"]]].copy()
     # Set 'Clean Peptide' as index for proper alignment
     DE_df.set_index("Clean Peptide", inplace=True)
 
     count_data = DE_df[columns_condition.keys()].copy()
+
+
     meta_data = pd.DataFrame({"condition": columns_condition.values()},
                              index=count_data.columns)
     meta_data["condition"] = pd.Categorical(meta_data["condition"], categories=["Control", "Experiment"], ordered=False)
@@ -179,7 +193,6 @@ def prepare_data(df:pd.DataFrame, columns_condition:dict):
 def run_deseq2(
     count_data: pd.DataFrame,
     meta_data: pd.DataFrame,
-    out_dir: str = "",
     factor: str = "condition",
     control_label: str = "Control",
     treatment_label: str = "Experiment",
@@ -201,6 +214,7 @@ def run_deseq2(
     res_df : pd.DataFrame
         Indexed by peptide, with columns ['baseMean','log2FoldChange','pvalue','padj',...]
     """
+# WARNInin: aqui creo que no esta comparando bien las cosas (Tiene que comparar por columnas)
     # 1) align metadata to samples
     meta = meta_data.reindex(count_data.columns)
     # 2) transpose for PyDESeq2
@@ -210,7 +224,8 @@ def run_deseq2(
     dds = DeseqDataSet(
         counts=counts,
         metadata=meta,
-        design_factors=factor,
+        design=f"~{factor}",
+
         n_cpus=1
     )
     dds.deseq2()  # size factors, dispersion, fit GLM
@@ -224,7 +239,6 @@ def run_deseq2(
 
     res = stats.results_df.copy()
     res.index = count_data.index  # restore peptides as rows
-
 
     fig, ax = plt.subplots(figsize=(6, 5))
     ax.scatter(
@@ -243,12 +257,6 @@ def run_deseq2(
     return res, fig
 
 
-
-
-
-import numpy as np
-import pandas as pd
-from pydeseq2.dds import DeseqDataSet
 
 def run_vst(
     count_data: pd.DataFrame,
@@ -329,13 +337,18 @@ def significant_DE_peptides(df:pd.DataFrame, significance_threshold:float = 0.05
     
 
     # Count up/downregulated genes
-    de_counts = df.groupby("updown").size().reset_index(name=f"DE at FDR < {significance_threshold}")
-
-    # Print results
-    print("Significant DE Peptides:")
-    print("\nCounts of Up/Down-Regulated Peptides:")
-    print(de_counts)
-    return df
+    up_count = df[df["updown"] == "up"].shape[0]
+    down_count = df[df["updown"] == "down"].shape[0]
+    not_significant_count = df[df["updown"] == "not_significant"].shape[0]
+    summary = {
+        "Upregulated Peptides": up_count,
+        "Downregulated Peptides": down_count,
+        "Not Significant Peptides": not_significant_count,
+        "Total Peptides": df.shape[0],
+        "Significance Threshold": significance_threshold,
+        "Log2FC Threshold": log2fc_threshold_experiment
+    }
+    return df, summary
 
 
 
@@ -359,7 +372,7 @@ def volcano_plot(
     output_path: str = None,
     significance_threshold=0.05,
     log2fc_threshold=1.5,
-    annotate_threshold=0.0005,
+    annotate_threshold=0.01,
     title="Volcano Plot"
 ) -> plt.Figure:
     """
@@ -399,8 +412,9 @@ def volcano_plot(
 
     # 4) Assign colors
     df["color"] = "grey"
-    df.loc[df["log2FoldChange"] >  log2fc_threshold, "color"] = "red"
+    df.loc[df["log2FoldChange"] >  log2fc_threshold , "color"] = "red"
     df.loc[df["log2FoldChange"] < -log2fc_threshold, "color"] = "blue"
+    df.loc[df["padj"] > significance_threshold, "color"] = "grey"
 
     # 5) Start plotting
     fig, ax = plt.subplots(figsize=(8, 6))
@@ -439,8 +453,8 @@ def volcano_plot(
     # 8) Legend and labels
     legend_elems = [
         Patch(facecolor="grey", label="Not significant"),
-        Patch(facecolor="red",  label=f"Up (|FC|>{log2fc_threshold}, FDR<{significance_threshold})"),
-        Patch(facecolor="blue", label=f"Down (|FC|>{log2fc_threshold}, FDR<{significance_threshold})"),
+        Patch(facecolor="red",  label=f"Up (|FC|>{log2fc_threshold}, FDR>{significance_threshold})"),
+        Patch(facecolor="blue", label=f"Down (|FC|<{log2fc_threshold}, FDR>{significance_threshold})"),
     ]
     ax.legend(handles=legend_elems, loc="upper left", frameon=True)
 
@@ -461,6 +475,21 @@ def generate_weblogo(input_fasta, output_pdf, title):
     command = f"weblogo -f {input_fasta} -o {output_pdf} --title '{title}' --format pdf --errorbars NO --fineprint ''"
     subprocess.run(command, shell=True)
 
+def to_fasta(peptides: pd.DataFrame, output_file: str = "peptides.fasta") -> str:
+    """
+    Converts a DataFrame of peptides into a FASTA file format.
+
+    Parameters:
+    peptides (pd.DataFrame): DataFrame containing peptide sequences.
+    output_file (str): Path to the output FASTA file.
+
+    Returns:
+    str: Path to the generated FASTA file.
+    """
+    with open(output_file, "w") as f:
+        for i, row in peptides.iterrows():
+            f.write(f">peptide_{i}\n{row['variable_pep']}\n")
+    return output_file
 
 def gibbs_cluster(input_file,motif_length,num_clusters, output_dir, run_name, logos=True):
 
@@ -491,9 +520,20 @@ def gibbs_cluster(input_file,motif_length,num_clusters, output_dir, run_name, lo
         match = re.search(r"#Session ID:\s*(\d+)", log_string)
         return match.group(1) if match else None
     
+    # save the input file as a fasta file
+    if isinstance(input_file, pd.DataFrame):
+        input_file = to_fasta(input_file, os.path.join(output_dir, "input_peptides.fasta"))
+            
+    # Ensure the output directory exists
+    os.makedirs(output_dir, exist_ok=True)
+
+    input_file_dir = os.path.abspath(input_file)
+    print(f"Input file for GibbsCluster: {input_file_dir}")
+
+    
     command = [
         GIBS_CLUSTER_BIN,
-        "-f", input_file,
+        "-f", input_file_dir,
         "-R", output_dir,
         "-P", run_name, 
         "-g", str(num_clusters),
@@ -530,7 +570,7 @@ def gibbs_cluster(input_file,motif_length,num_clusters, output_dir, run_name, lo
         print(f"Error running GibbsCluster: {e.stderr}")
         return None
 
-def parse_gibbscluster_output(file_path:str):
+def parse_gibbscluster_output(dir,num_clusters):
     """
     Parses the GibbsCluster output file to extract peptide sequences for each cluster.
 
@@ -541,7 +581,9 @@ def parse_gibbscluster_output(file_path:str):
     dict: Dictionary with clusters as keys and lists of peptides as values.
     """
     # Read the file, skipping the header row
-    df = pd.read_csv(file_path, delim_whitespace=True, header=None, skiprows=1, 
+
+
+    df = pd.read_csv(CURRENT_DIR+"/"+ dir +f"/res/gibbs.{num_clusters}g.ds.out", delim_whitespace=True, header=None, skiprows=1, 
                      names=["G", "Gn", "Num", "Sequence", "Core", "o", "of", "ip", "IP", "il", "IL", "dp", "DP", "dl", "DL", 
                             "Annotation", "sS", "Self", "bgG", "bgG_Val", "bgS", "bgS_Val", "cS", "cScore"])
     df["Gn"]= df["Gn"] + 1

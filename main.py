@@ -5,34 +5,27 @@ from statsmodels.stats.multitest import multipletests
 from Library.lib import *  # your own library functions
 
 st.set_page_config(page_title="Peptide Analysis App", layout="wide")
-st.title("🧬 Peptide Differential Expression & Clustering")
+st.title("Peptide Differential Expression & Clustering")
 
 # Upload CSV file
 uploaded_file = st.file_uploader("Upload your peptide CSV file", type=["csv"])
 if uploaded_file is None:
-    st.info("👈 Upload a CSV file to start.")
+    st.info("Upload a CSV file to start.")
     st.stop()
 
 # Load data
 data = pd.read_csv(uploaded_file)
 st.success(f"Loaded data with shape {data.shape}")
 
-# Rename columns
-st.header("🔠 Column Renaming")
-rename_dict = {}
-for col in data.columns:
-    new_name = st.text_input(f"Rename column '{col}'", value=col)
-    rename_dict[col] = new_name
-data = data.rename(columns=rename_dict)
 
 st.write("Renamed Data Preview:", data.head())
 
 # Parameters for grouping/filtering
-st.header("⚙️ Analysis Parameters")
+st.header("Analysis Parameters")
 
-regex = st.text_input("Peptide regex for grouping", value=r'A.C.{7}C')
-st.write("Example regex: `A.C.{7}C` matches peptides starting with A, followed by any amino acid, then C, and 7 more amino acids ending with C.")
-cpm_threshold = st.number_input("CPM filter threshold", min_value=0, value=5)
+regex = st.text_input("Peptide library form (it needs to be in the form of a python regular expression)", value=r'A.C.{7}C')
+st.write("Example regex: `A.C.{7}C` matches peptides starting with A (for alanine), followed by any natural amino acid, then C, and 7 more amino acids ending with C.")
+cpm_threshold = st.number_input("CPM (counts per million) filter threshold", min_value=0, value=5)
 min_count = st.number_input("Minimum samples with counts >= CPM threshold", min_value=1, value=1)
 plot_filtering = st.checkbox("Plot CPM filtering", value=True)
 
@@ -40,7 +33,8 @@ plot_filtering = st.checkbox("Plot CPM filtering", value=True)
 num_clusters = st.number_input("Number of Clusters", min_value=2, value=4)
 
 # Define experimental design
-st.header("🧪 Experimental Conditions")
+st.header("Experimental Conditions")
+st.write("Define the experimental conditions for each peptide column (if it is either the protein sample or the control sample). Select 'Exclude' to skip a column from analysis.")
 columns_conditions = {}
 for col in data.columns[1:]:  # skip peptide ID column
     condition = st.selectbox(f"Condition for {col}", options=["Control", "Experiment", "Exclude"], index=0)
@@ -52,26 +46,49 @@ if st.button("🚀 Run Analysis"):
     with st.spinner("Running analysis..."):
 
         # Group by peptide
-        grouped = group_by_peptide(data, len(columns_conditions), regex, "Cleaned_Peptides.csv")
+        grouped, summary = group_by_peptide(data, columns_conditions, regex)
+
+        
+        # Display grouped data
+        st.subheader("Grouped Data")
+        st.dataframe(grouped.head(40))
+
+        st.subheader("Grouped Data Summary")
+        for key, value in summary.items():
+            st.write(f"{key}: {value}")
+
 
         # Filter by CPM
-        filtered, fig = filter_by_CPM(grouped , cpm_threshold, min_count, plot=plot_filtering)
+        filtered, fig = filter_by_CPM(grouped, columns_conditions , cpm_threshold, min_count, plot=plot_filtering)
 
-        st.pyplot(fig)
+        if plot_filtering:
+            st.subheader("CPM Filtering Histogram")
+            st.write("Histogram of CPM values before and after filtering")
+            st.pyplot(fig)
+
+        st.subheader("Filtered Data")
+        st.dataframe(filtered.head(40))
+
+        # display the number of peptides before and after filtering
+        st.write(f"Number of peptides before filtering: {grouped.shape[0]}")
+        st.write(f"Number of peptides after filtering: {filtered.shape[0]}")
 
         # Prepare data for DESeq2
         count_data, meta_data = prepare_data(filtered, columns_conditions)
 
         # Differential expression
         res_df, fig = run_deseq2(count_data, meta_data)
+        st.subheader("Differential Expression Results")
+        st.write("Results of differential expression analysis using DESeq2")
         st.pyplot(fig)
-        res_df = significant_DE_peptides(res_df)
 
-        # Adjust p-values
-        _, padj, _, _ = multipletests(res_df["pvalue"], method="fdr_bh")
-        res_df["padj"] = padj
-        res_df["-log10(padj)"] = -np.log10(padj + 1e-10)
-        res_df = significant_DE_peptides(res_df)
+        res_df, summary = significant_DE_peptides(res_df)
+
+        st.subheader("Significant DE Peptides")
+        st.write("Peptides with significant differential expression (FDR < 0.05)")
+
+        for key, value in summary.items():
+            st.write(f"{key}: {value}")
 
         st.subheader("DE Results Table")
         st.dataframe(res_df.head(40))
@@ -96,8 +113,30 @@ if st.button("🚀 Run Analysis"):
         adj_DE = res_df.loc[~res_df["additional_cys"]].drop(columns=["additional_cys"]).reset_index()
 
         # # Save peptide lists
-        # adj_DE[adj_DE["updown"] == "up"][["variable_pep"]]
-        # adj_DE[adj_DE["updown"] == "up"][["Clean Peptide"]]
+
+        st.subheader("📑 Upregulated Peptides")
+        st.write("List of upregulated peptides after filtering and processing:")
+        st.dataframe(adj_DE[adj_DE["updown"] == "up"][["variable_pep", "log2FoldChange", "padj"]])
+
+
+
+        # turn the peptides into a fasta file
+
+        upregulated_variable_peps = adj_DE[adj_DE["updown"] == "up"][["variable_pep"]]
+        
+        # button to run clustering
+        st.subheader("🔍 Clustering Analysis")
+        st.write("Running Gibbs clustering on upregulated peptides...")
+
+
+        clustering_dir = gibbs_cluster(
+            upregulated_variable_peps , 11, num_clusters,
+            "Clustering", "Clustering_Results", logos=True
+        )
+        clusters = parse_gibbscluster_output(clustering_dir,num_clusters=num_clusters)
+        adj_DE.rename(columns={"Clean Peptide": "Sequence"}, inplace=True)
+        clusters = pd.merge(clusters, adj_DE[["Sequence", "log2FoldChange", "padj", "-log10(padj)"]])
+
 
         # Generate WebLogo plots
         weblogos = [
@@ -109,19 +148,6 @@ if st.button("🚀 Run Analysis"):
 
         st.success("WebLogos generated and saved!")
 
-        
-        # button to run clustering
-        st.subheader("🔍 Clustering Analysis")
-        st.write("Running Gibbs clustering on upregulated peptides...")
-
-
-        clustering_dir = gibbs_cluster(
-            "Upregulated_peptides.pep", 11, num_clusters,
-            "Clustering", "Clustering_Results", logos=True
-        )
-        clusters = parse_gibbscluster_output(f"{clustering_dir}/res/gibbs.{num_clusters}g.ds.out")
-        adj_DE.rename(columns={"Clean Peptide": "Sequence"}, inplace=True)
-        clusters = pd.merge(clusters, adj_DE[["Sequence", "log2FoldChange", "padj", "-log10(padj)"]])
 
         # Display cluster boxplots
         st.subheader("📊 Cluster Analysis")
