@@ -1,18 +1,25 @@
+#!/usr/bin/env python3
 """
-Consensus Clustering and Validation Methods for Peptide Motif Discovery
+Consensus Clustering and Validation Methods
 
-This module implements advanced clustering validation techniques including:
-- Consensus clustering across multiple seeds
-- Silhouette analysis for cluster quality
-- Stability-based cluster number selection
-- Bootstrap validation
-- Adjusted Rand Index comparison
-- Cluster quality metrics
+Advanced clustering validation and consensus methods for robust peptide motif discovery.
+Implements multiple validation techniques for assessing clustering quality and stability.
+
+Features:
+- Consensus clustering across multiple independent runs
+- Silhouette analysis for cluster quality assessment
+- Stability-based automatic cluster number selection
+- Bootstrap validation for robustness testing
+- Adjusted Rand Index for clustering comparison
+- Comprehensive quality metrics and interpretive guidance
 
 Based on:
 - Monti et al. (2003) "Consensus Clustering: A Resampling-Based Method for Class Discovery"
 - Rousseeuw (1987) "Silhouettes: a Graphical Aid to the Interpretation and Validation"
 - Strehl & Ghosh (2002) "Cluster Ensembles: A Knowledge Reuse Framework"
+
+Author: Peptide Analysis Pipeline
+Version: 2.0
 """
 
 import numpy as np
@@ -516,8 +523,10 @@ class ConsensusClusteringValidator:
             
             composite_scores[k] = score
         
-        # Select k with highest composite score
-        optimal_k = max(composite_scores.keys(), key=lambda k: composite_scores[k])
+        # Select k with highest composite score (prefer lower K in case of ties)
+        max_score = max(composite_scores.values())
+        candidates = [k for k, score in composite_scores.items() if abs(score - max_score) < 1e-6]
+        optimal_k = min(candidates)  # Prefer simpler model (lower K) in case of ties
         
         component_scores = {
             'stability': stability_scores[optimal_k],

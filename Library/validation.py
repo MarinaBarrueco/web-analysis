@@ -1,5 +1,21 @@
+#!/usr/bin/env python3
 """
-Data Validation and Safety Utilities for Peptide Analysis Pipeline
+Data Validation and Safety Utilities
+
+Comprehensive validation functions for ensuring data quality and safety
+throughout the peptide analysis pipeline. Includes format validation,
+parameter checking, and experimental design validation.
+
+Features:
+- DataFrame structure and content validation
+- Peptide sequence validation with amino acid checking
+- Experimental design validation and balance checking
+- Parameter compatibility and range validation
+- Safety checks for clustering parameters
+- Comprehensive error reporting and suggestions
+
+Author: Peptide Analysis Pipeline
+Version: 2.0
 """
 
 import pandas as pd

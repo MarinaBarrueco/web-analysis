@@ -1,18 +1,26 @@
-# Peptide Analysis Pipeline
+# 🧬 Peptide Analysis Dashboard
 
-A comprehensive pipeline for differential expression analysis and clustering of peptide sequences from library screening experiments.
+A comprehensive interactive pipeline for differential expression analysis and clustering of peptide sequences from library screening experiments. Features an intuitive Streamlit dashboard with automated quality control, consensus clustering validation, and publication-ready visualizations.
 
 ## 🚀 Quick Start
 
-### Requirements
-Install dependencies:
+### Installation
+1. Clone or download this repository
+2. Install dependencies:
 ```bash
 pip install -r requirements.txt
 ```
 
-### Run Analysis
-- **Dashboard Interface**: `streamlit run main_dashboard.py`
-- **Basic Interface**: `streamlit run main.py`
+### Launch Dashboard
+```bash
+streamlit run main_dashboard.py
+```
+
+The dashboard will open in your web browser with an interactive interface featuring:
+- **Step-by-step workflow guidance**
+- **Built-in help and documentation**
+- **Real-time analysis validation**  
+- **Publication-ready visualizations**
 
 ## 📁 Project Structure
 
@@ -42,61 +50,98 @@ web-analysis/
 └── gibbscluster-2.0/        # External Gibbs clustering tool
 ```
 
-## 🧬 Analysis Pipeline
+## 🧬 Dashboard Workflow
 
-### 1. Data Processing
-- **Pattern Matching**: Extract peptides matching library design (e.g., `A.C.{7}C`)
-- **CPM Filtering**: Remove low-abundance sequences using counts per million
-- **Quality Control**: Validate data integrity and experimental design
+The interactive dashboard guides users through a complete analysis pipeline:
 
-### 2. Differential Expression
-- **DESeq2 Analysis**: Statistical testing for condition differences
-- **Multiple Testing**: Benjamini-Hochberg FDR correction
-- **Effect Size**: Log2 fold change thresholds for biological significance
+### 📁 **Step 1: Data Upload**
+- Upload CSV files with peptide sequences and count data
+- Automatic data validation and format checking
+- Preview data structure and quality metrics
 
-### 3. Clustering Analysis
-- **Gibbs Sampling**: Discover conserved sequence motifs
-- **Consensus Validation**: Stability assessment through subsampling
-- **Quality Metrics**: Silhouette analysis and bootstrap validation
-- **Visualization**: Generate sequence logos and cluster plots
+### ⚙️ **Step 2: Configure Parameters**
+- **Simplified Clustering Modes**:
+  - **Simple**: Basic clustering with fixed K (recommended for beginners)
+  - **Advanced**: Enhanced features with fixed K
+  - **Auto-Selection**: Automatic optimal K discovery
+- **Pattern Matching**: Flexible regex for library designs
+- **Quality Filters**: CPM thresholds and sample requirements
+
+### 🔬 **Step 3: Experimental Design**
+- Interactive sample assignment (Control/Experiment/Exclude)
+- Real-time validation with warnings and suggestions
+- Automatic design balance checking
+
+### 📊 **Step 4: Analysis Execution**
+1. **Pattern Matching & Filtering**: Quality-controlled sequence processing
+2. **Differential Expression**: DESeq2-based statistical analysis with multiple testing correction
+3. **Significance Assessment**: Automated classification of up/down/non-significant peptides  
+4. **Clustering Analysis**: Advanced Gibbs sampling with consensus validation
+5. **Quality Metrics**: Silhouette scoring, stability assessment, and bootstrap validation
+
+### 📈 **Step 5: Results Exploration**
+- **Interactive Tabs**: Filtering, Differential Expression, Clustering, Summary
+- **Publication-Ready Plots**: MA plots, volcano plots, box plots by cluster
+- **Enhanced Visualizations**: Clean sequence logos showing full peptide motifs
+- **Quality Dashboards**: Comprehensive clustering metrics and interpretations
 
 ## 🔧 Key Features
 
-- **Flexible Input**: CSV files with peptide sequences and count data
-- **Robust Statistics**: DESeq2-based differential expression analysis
-- **Advanced Clustering**: Consensus methods for reliable motif discovery
-- **Quality Control**: Comprehensive validation and error checking
-- **Interactive Dashboard**: User-friendly Streamlit interface
-- **Comprehensive Documentation**: Theoretical foundations and practical guides
+### 🎯 **User Experience**
+- **Intuitive Dashboard**: Step-by-step guided workflow with progress tracking
+- **Built-in Help**: Comprehensive instructions and tooltips throughout
+- **Real-time Validation**: Immediate feedback on data quality and parameter choices
+- **Error Handling**: Graceful failure modes with helpful error messages
 
-## 📊 Usage Examples
+### 📊 **Analysis Capabilities**
+- **Flexible Input**: Support for various CSV formats and experimental designs
+- **Robust Statistics**: DESeq2-based differential expression with proper normalization
+- **Advanced Clustering**: Three modes (Simple/Advanced/Auto-Selection) for different user needs
+- **Quality Metrics**: Comprehensive clustering validation with interpretive guidance
 
-### Basic Analysis
-```python
-from Library.lib import *
+### 🎨 **Visualizations**
+- **Clean Sequence Logos**: Noise-filtered motifs showing full peptide patterns
+- **Interactive Plots**: MA plots, volcano plots, and differential expression box plots
+- **Quality Dashboards**: Clustering metrics with color-coded assessments
+- **Publication Ready**: High-resolution figures with proper styling
 
-# Load and process data
-data = pd.read_csv("peptides.csv")
-grouped, summary = group_by_peptide(data, conditions, regex="A.C.{7}C")
-filtered, fig = filter_by_CPM(grouped, conditions, cpm_threshold=5, min_count=2)
+### 🔬 **Scientific Rigor**
+- **Consensus Validation**: Subsampling-based stability assessment
+- **Bootstrap Analysis**: Additional robustness testing for clustering
+- **Multiple Testing Correction**: Proper FDR control for differential expression
+- **Comprehensive Documentation**: Theoretical foundations and best practices
 
-# Differential expression
-count_data, meta_data = prepare_data(filtered, conditions)
-results_df, ma_plot = run_deseq2(count_data, meta_data)
+## 💾 **Input Data Format**
+
+Your CSV file should have this structure:
+
+```csv
+peptide,Sample1_Control,Sample2_Control,Sample1_Treatment,Sample2_Treatment
+AYCPFRSWPGCGG,1250,890,2340,1980
+AFCSLWRSGDCGG,890,1100,0,45
+AACALWRSTPCGG,2100,1850,3200,2890
 ```
 
-### Advanced Clustering
-```python
-from Library.enhanced_gibbs_clustering import enhanced_gibbs_cluster_with_validation
+**Requirements:**
+- First column: `peptide` containing sequence strings
+- Remaining columns: Numeric count data for each sample
+- Column names can be anything descriptive for your experiment
+- Missing values should be 0 or empty (will be treated as 0)
 
-# Run clustering with validation
-clusters_df, pwms, logos, validation = enhanced_gibbs_cluster_with_validation(
-    sequences, 
-    motif_length=8,
-    k_range=(2, 6),
-    validation_enabled=True
-)
-```
+## 🎛️ **Dashboard Interface**
+
+### Getting Started
+1. Launch the dashboard: `streamlit run main_dashboard.py`
+2. Click **"📖 How to Use This Dashboard"** for detailed instructions
+3. Upload your CSV file and follow the guided workflow
+4. Download results as CSV files or publication-ready plots
+
+### Key Interface Elements
+- **Progress Tracker**: Shows your current step in the analysis pipeline
+- **Parameter Validation**: Live feedback on parameter compatibility
+- **Interactive Results**: Tabs for filtering, differential expression, clustering, and summary
+- **Quality Assessments**: Color-coded metrics with interpretive guidance
+- **Download Options**: Export results and visualizations
 
 ## 📚 Documentation
 

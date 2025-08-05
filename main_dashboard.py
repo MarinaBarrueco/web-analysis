@@ -1,8 +1,27 @@
+#!/usr/bin/env python3
+"""
+Peptide Analysis Dashboard
+
+Interactive Streamlit dashboard for comprehensive peptide library analysis including:
+- Pattern-based filtering and CPM normalization
+- DESeq2-based differential expression analysis  
+- Advanced Gibbs clustering with consensus validation
+- Publication-ready visualizations and quality metrics
+
+Usage:
+    streamlit run main_dashboard.py
+
+Author: Peptide Analysis Pipeline
+Version: 2.0
+"""
+
 import streamlit as st
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 from statsmodels.stats.multitest import multipletests
+
+# Import analysis modules
 from Library.lib import *
 from Library.Clustering import gibbs_cluster
 from Library.GibbsClusterAdvanced import gibbs_cluster_advanced, GibbsClusterAdvanced
@@ -72,8 +91,165 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
+# ===================================================================
+# CONSTANTS AND CONFIGURATION
+# ===================================================================
+
+# Default parameter values
+DEFAULT_PARAMS = {
+    'regex': r'A.C.{7}C',
+    'cpm_threshold': 5,
+    'min_count': 1,
+    'motif_length': 8,
+    'num_clusters': 4,
+    'num_seeds': 3,
+    'iterations': 10,
+    'n_iter_basic': 1000,
+    'temperature_start': 1.5,
+    'temperature_steps': 20,
+    'lambda_penalty': 0.8,
+    'sigma_weight': 5.0,
+    'sequence_weighting': 0,
+    'background_model': 1,
+    'n_consensus_iterations': 50,
+    'n_bootstrap_iterations': 30,
+    'sample_fraction': 0.8,
+    'use_trash_cluster': False,
+    'trash_threshold': 0.0
+}
+
+# Analysis progress steps
+ANALYSIS_STEPS = [
+    "📁 Data Upload",
+    "⚙️ Parameters", 
+    "🔬 Analysis",
+    "📈 Results"
+]
+
+# K range mappings for auto-selection
+K_RANGE_OPTIONS = {
+    "Narrow (2-5)": (2, 5),
+    "Medium (2-7)": (2, 7),
+    "Wide (2-10)": (2, 10)
+}
+
+# ===================================================================
+# HELPER FUNCTIONS
+# ===================================================================
+
+def get_analysis_progress_step():
+    """Determine current analysis progress step"""
+    if 'data' not in st.session_state:
+        return 0
+    if not st.session_state.get('parameters_set', False):
+        return 1
+    if not st.session_state.analysis_complete:
+        return 2
+    return 3
+
+def validate_data_format(data: pd.DataFrame) -> tuple[bool, list[str]]:
+    """Validate uploaded data format and return status with messages"""
+    errors = []
+    
+    if data.empty:
+        errors.append("Data file is empty")
+    
+    if 'peptide' not in data.columns:
+        errors.append("Missing 'peptide' column")
+    
+    if len(data.columns) < 2:
+        errors.append("Need at least one sample column besides 'peptide'")
+    
+    # Check for numeric data in sample columns
+    sample_cols = [col for col in data.columns if col != 'peptide']
+    for col in sample_cols:
+        if not pd.api.types.is_numeric_dtype(data[col]):
+            try:
+                data[col] = pd.to_numeric(data[col], errors='coerce')
+            except:
+                errors.append(f"Column '{col}' contains non-numeric data")
+    
+    return len(errors) == 0, errors
+
+def create_metric_card(title: str, value: str, help_text: str = ""):
+    """Create a styled metric card"""
+    help_tooltip = f"help='{help_text}'" if help_text else ""
+    return f"""
+    <div class="metric-card" {help_tooltip}>
+        <h3>{value}</h3>
+        <p>{title}</p>
+    </div>
+    """
+
+# ===================================================================
+# MAIN DASHBOARD
+# ===================================================================
+
 # Main dashboard header
 st.markdown('<h1 class="main-header">🧬 Peptide Analysis Dashboard</h1>', unsafe_allow_html=True)
+
+# Help and Instructions Section
+with st.expander("📖 How to Use This Dashboard", expanded=False):
+    st.markdown("""
+    ## 🚀 Quick Start Guide
+    
+    ### 📁 **Step 1: Prepare Your Data**
+    Upload a CSV file with the following structure:
+    - **First column**: `peptide` - Contains your peptide sequences
+    - **Remaining columns**: Sample data with count values for each condition
+    
+    **Example CSV format:**
+    ```
+    peptide,Sample1_Control,Sample2_Control,Sample1_Treatment,Sample2_Treatment
+    AYCPFRSWPGCGG,1250,890,2340,1980
+    AFCSLWRSGDCGG,890,1100,0,45
+    ```
+    
+    ### ⚙️ **Step 2: Configure Analysis Parameters**
+    
+    **🔍 Pattern & Filtering:**
+    - **Peptide Pattern**: Regular expression to match your library design (e.g., `A.C.{7}C` for A-X-C-XXXXXXX-C)
+    - **CPM Threshold**: Minimum counts per million for filtering (default: 5)
+    - **Min Samples**: Minimum samples that must exceed CPM threshold (default: 1)
+    
+    **🧬 Clustering Modes:**
+    - **Simple**: Basic clustering with fixed number of clusters (recommended for beginners)
+    - **Advanced**: Enhanced clustering features with fixed K
+    - **Auto-Selection**: Automatically finds optimal number of clusters using validation metrics
+    
+    ### 🔬 **Step 3: Set Experimental Conditions**
+    Assign each sample column to either:
+    - **Control**: Reference condition
+    - **Experiment**: Treatment condition
+    - **Exclude**: Skip this sample
+    
+    ### 📊 **Step 4: Run Analysis**
+    The pipeline will automatically:
+    1. Filter peptides by pattern and CPM thresholds
+    2. Perform differential expression analysis (DESeq2)
+    3. Identify significant peptides
+    4. Cluster upregulated sequences
+    5. Generate sequence logos and quality metrics
+    
+    ## 🎯 **Understanding Results**
+    
+    **📊 Filtering Tab**: Shows data quality and filtering effectiveness
+    
+    **🧮 Differential Expression Tab**: 
+    - MA Plot: Expression vs. fold change
+    - Volcano Plot: Significance vs. fold change
+    
+    **🔬 Clustering Tab**:
+    - Quality metrics assess clustering reliability
+    - Sequence logos show motif patterns
+    - Box plots display differential expression by cluster
+    
+    ## 💡 **Tips for Best Results**
+    - Ensure adequate sequencing depth (>1000 reads per sample)
+    - Use biological replicates for robust statistical analysis  
+    - Choose appropriate CPM thresholds based on your data distribution
+    - Validate clustering results with known motifs if available
+    """)
 
 # Initialize session state for data persistence
 if 'analysis_data' not in st.session_state:
@@ -86,23 +262,10 @@ with st.sidebar:
     st.header("📊 Dashboard Control")
     
     # Analysis progress indicator
-    progress_steps = [
-        "📁 Data Upload",
-        "⚙️ Parameters",
-        "🔬 Analysis",
-        "📈 Results"
-    ]
-    
-    current_step = 0
-    if 'data' in st.session_state:
-        current_step = 1
-    if st.session_state.get('parameters_set', False):
-        current_step = 2
-    if st.session_state.analysis_complete:
-        current_step = 3
+    current_step = get_analysis_progress_step()
     
     st.subheader("Progress")
-    for i, step in enumerate(progress_steps):
+    for i, step in enumerate(ANALYSIS_STEPS):
         if i <= current_step:
             st.markdown(f"✅ {step}")
         else:
@@ -137,6 +300,16 @@ with col1:
     if uploaded_file is not None:
         try:
             data = pd.read_csv(uploaded_file)
+            
+            # Validate data format
+            is_valid, errors = validate_data_format(data)
+            
+            if not is_valid:
+                st.error("❌ Data validation failed:")
+                for error in errors:
+                    st.error(f"• {error}")
+                st.stop()
+            
             st.session_state['data'] = data
             
             # Data preview in expandable container
@@ -193,21 +366,21 @@ if 'data' in st.session_state:
         with st.expander("🔍 Pattern & Filtering", expanded=True):
             regex = st.text_input(
                 "Peptide Pattern", 
-                value=r'A.C.{7}C',
+                value=DEFAULT_PARAMS['regex'],
                 help="Regular expression for peptide library pattern"
             )
             
             cpm_threshold = st.number_input(
                 "CPM Threshold", 
                 min_value=0, 
-                value=5,
+                value=DEFAULT_PARAMS['cpm_threshold'],
                 help="Minimum counts per million for filtering"
             )
             
             min_count = st.number_input(
                 "Min Samples", 
                 min_value=1, 
-                value=1,
+                value=DEFAULT_PARAMS['min_count'],
                 help="Minimum samples exceeding CPM threshold"
             )
             
@@ -215,34 +388,44 @@ if 'data' in st.session_state:
     
     with param_col2:
         with st.expander("🧬 Clustering Options", expanded=True):
-            use_advanced_clustering = st.checkbox("Advanced Clustering", value=True)
-            use_consensus_validation = st.checkbox("Consensus Validation", value=True)
+            # Simplified clustering mode selection
+            clustering_mode = st.selectbox(
+                "Clustering Mode",
+                ["Simple", "Advanced", "Auto-Selection"],
+                index=0,  # Default to Simple
+                help="Simple: Basic clustering with fixed K | Advanced: Enhanced features | Auto-Selection: Finds optimal K"
+            )
             
-            if use_consensus_validation:
-                auto_k_selection = st.checkbox("Auto K Selection", value=True)
-                if auto_k_selection:
-                    k_range_option = st.selectbox(
-                        "K Search Range",
-                        ["Narrow (2-5)", "Medium (2-7)", "Wide (2-10)"],
-                        index=1
-                    )
-                    range_mapping = {
-                        "Narrow (2-5)": (2, 5),
-                        "Medium (2-7)": (2, 7), 
-                        "Wide (2-10)": (2, 10)
-                    }
-                    k_range = range_mapping[k_range_option]
-                else:
-                    num_clusters = st.number_input("Number of Clusters", min_value=2, value=4)
-                    k_range = num_clusters
-            else:
-                num_clusters = st.number_input("Number of Clusters", min_value=2, value=4)
+            # Set parameters based on mode
+            if clustering_mode == "Simple":
+                use_advanced_clustering = False
+                use_consensus_validation = False
+                num_clusters = st.number_input("Number of Clusters", min_value=2, max_value=8, value=DEFAULT_PARAMS['num_clusters'])
                 k_range = num_clusters
+                
+            elif clustering_mode == "Advanced":
+                use_advanced_clustering = True
+                use_consensus_validation = False
+                num_clusters = st.number_input("Number of Clusters", min_value=2, max_value=8, value=DEFAULT_PARAMS['num_clusters'])
+                k_range = num_clusters
+                
+            else:  # Auto-Selection
+                use_advanced_clustering = True
+                use_consensus_validation = True
+                k_range_option = st.selectbox(
+                    "K Search Range",
+                    list(K_RANGE_OPTIONS.keys()),
+                    index=1
+                )
+                k_range = K_RANGE_OPTIONS[k_range_option]
+                num_clusters = DEFAULT_PARAMS['num_clusters']  # fallback value
             
-            motif_length = st.number_input("Motif Length", min_value=6, value=8)
+            motif_length = st.number_input("Motif Length", min_value=6, max_value=12, value=DEFAULT_PARAMS['motif_length'])
             
-            # Advanced clustering hyperparameters
-            show_advanced_params = st.checkbox("Show Advanced Parameters", value=False)
+            # Advanced clustering hyperparameters (only show for Advanced/Auto modes)
+            show_advanced_params = False
+            if clustering_mode in ["Advanced", "Auto-Selection"]:
+                show_advanced_params = st.checkbox("Show Advanced Parameters", value=False)
             
             if show_advanced_params:
                 st.markdown("**🔧 Advanced Clustering Parameters**")
@@ -251,32 +434,32 @@ if 'data' in st.session_state:
                 col_adv1, col_adv2 = st.columns(2)
                 with col_adv1:
                     st.markdown("*Sampling:*")
-                    num_seeds = st.number_input("Number of Seeds", min_value=1, max_value=10, value=3, help="Independent sampling runs for convergence assessment")
-                    iterations = st.number_input("Iterations per Temperature", min_value=5, max_value=50, value=10, help="Gibbs sampling iterations at each temperature")
-                    n_iter_basic = st.number_input("Basic Clustering Iterations", min_value=100, max_value=5000, value=1000, help="Total iterations for basic clustering")
+                    num_seeds = st.number_input("Number of Seeds", min_value=1, max_value=10, value=DEFAULT_PARAMS['num_seeds'], help="Independent sampling runs for convergence assessment")
+                    iterations = st.number_input("Iterations per Temperature", min_value=5, max_value=50, value=DEFAULT_PARAMS['iterations'], help="Gibbs sampling iterations at each temperature")
+                    n_iter_basic = st.number_input("Basic Clustering Iterations", min_value=100, max_value=5000, value=DEFAULT_PARAMS['n_iter_basic'], help="Total iterations for basic clustering")
                 
                 with col_adv2:
                     st.markdown("*Temperature Annealing:*")
-                    temperature_start = st.number_input("Start Temperature", min_value=0.5, max_value=3.0, value=1.5, step=0.1, help="Initial sampling temperature for exploration")
-                    temperature_steps = st.number_input("Temperature Steps", min_value=10, max_value=50, value=20, help="Number of temperature reduction steps")
+                    temperature_start = st.number_input("Start Temperature", min_value=0.5, max_value=3.0, value=DEFAULT_PARAMS['temperature_start'], step=0.1, help="Initial sampling temperature for exploration")
+                    temperature_steps = st.number_input("Temperature Steps", min_value=10, max_value=50, value=DEFAULT_PARAMS['temperature_steps'], help="Number of temperature reduction steps")
                 
                 # Regularization parameters
                 col_reg1, col_reg2 = st.columns(2)
                 with col_reg1:
                     st.markdown("*Regularization:*")
-                    lambda_penalty = st.number_input("Lambda Penalty", min_value=0.0, max_value=2.0, value=0.8, step=0.1, help="Penalty for similarity between clusters")
-                    sigma_weight = st.number_input("Sigma Weight", min_value=1.0, max_value=10.0, value=5.0, step=0.5, help="Weight penalty for small clusters")
+                    lambda_penalty = st.number_input("Lambda Penalty", min_value=0.0, max_value=2.0, value=DEFAULT_PARAMS['lambda_penalty'], step=0.1, help="Penalty for similarity between clusters")
+                    sigma_weight = st.number_input("Sigma Weight", min_value=1.0, max_value=10.0, value=DEFAULT_PARAMS['sigma_weight'], step=0.5, help="Weight penalty for small clusters")
                 
                 with col_reg2:
                     st.markdown("*Model Parameters:*")
                     sequence_weighting = st.selectbox("Sequence Weighting", 
                                                     options=[0, 1, 2], 
-                                                    index=0,
+                                                    index=DEFAULT_PARAMS['sequence_weighting'],
                                                     format_func=lambda x: {0: "1/ns (Recommended)", 1: "Clustering", 2: "None"}[x],
                                                     help="Weighting scheme for sequences")
                     background_model = st.selectbox("Background Model",
                                                   options=[0, 1, 2],
-                                                  index=1,
+                                                  index=DEFAULT_PARAMS['background_model'],
                                                   format_func=lambda x: {0: "Flat", 1: "BLOSUM (Recommended)", 2: "From Data"}[x],
                                                   help="Background amino acid frequency model")
                 
@@ -285,44 +468,44 @@ if 'data' in st.session_state:
                     st.markdown("*Validation Parameters:*")
                     col_val1, col_val2 = st.columns(2)
                     with col_val1:
-                        n_consensus_iterations = st.number_input("Consensus Iterations", min_value=10, max_value=200, value=50, help="Subsampling iterations for stability")
+                        n_consensus_iterations = st.number_input("Consensus Iterations", min_value=10, max_value=200, value=DEFAULT_PARAMS['n_consensus_iterations'], help="Subsampling iterations for stability")
                         enable_bootstrap = st.checkbox("Enable Bootstrap", value=True, help="Additional bootstrap validation")
                     
                     with col_val2:
                         if enable_bootstrap:
-                            n_bootstrap_iterations = st.number_input("Bootstrap Iterations", min_value=10, max_value=100, value=30, help="Bootstrap resampling iterations")
+                            n_bootstrap_iterations = st.number_input("Bootstrap Iterations", min_value=10, max_value=100, value=DEFAULT_PARAMS['n_bootstrap_iterations'], help="Bootstrap resampling iterations")
                         else:
                             n_bootstrap_iterations = 0
                         
-                        sample_fraction = st.number_input("Sample Fraction", min_value=0.5, max_value=0.9, value=0.8, step=0.05, help="Fraction of sequences for subsampling")
+                        sample_fraction = st.number_input("Sample Fraction", min_value=0.5, max_value=0.9, value=DEFAULT_PARAMS['sample_fraction'], step=0.05, help="Fraction of sequences for subsampling")
                 
                 # Outlier handling
                 st.markdown("*Outlier Handling:*")
                 col_out1, col_out2 = st.columns(2)
                 with col_out1:
-                    use_trash_cluster = st.checkbox("Use Trash Cluster", value=False, help="Create cluster for outlier sequences")
+                    use_trash_cluster = st.checkbox("Use Trash Cluster", value=DEFAULT_PARAMS['use_trash_cluster'], help="Create cluster for outlier sequences")
                 with col_out2:
                     if use_trash_cluster:
-                        trash_threshold = st.number_input("Trash Threshold", min_value=0.0, max_value=0.5, value=0.1, step=0.05, help="Probability threshold for trash assignment")
+                        trash_threshold = st.number_input("Trash Threshold", min_value=0.0, max_value=0.5, value=DEFAULT_PARAMS['trash_threshold'], step=0.05, help="Probability threshold for trash assignment")
                     else:
-                        trash_threshold = 0.0
+                        trash_threshold = DEFAULT_PARAMS['trash_threshold']
             else:
                 # Default values when advanced parameters are hidden
-                num_seeds = 3
-                iterations = 10
-                n_iter_basic = 1000
-                temperature_start = 1.5
-                temperature_steps = 20
-                lambda_penalty = 0.8
-                sigma_weight = 5.0
-                sequence_weighting = 0
-                background_model = 1
-                n_consensus_iterations = 50
+                num_seeds = DEFAULT_PARAMS['num_seeds']
+                iterations = DEFAULT_PARAMS['iterations']
+                n_iter_basic = DEFAULT_PARAMS['n_iter_basic']
+                temperature_start = DEFAULT_PARAMS['temperature_start']
+                temperature_steps = DEFAULT_PARAMS['temperature_steps']
+                lambda_penalty = DEFAULT_PARAMS['lambda_penalty']
+                sigma_weight = DEFAULT_PARAMS['sigma_weight']
+                sequence_weighting = DEFAULT_PARAMS['sequence_weighting']
+                background_model = DEFAULT_PARAMS['background_model']
+                n_consensus_iterations = DEFAULT_PARAMS['n_consensus_iterations']
                 enable_bootstrap = True
-                n_bootstrap_iterations = 30
-                sample_fraction = 0.8
-                use_trash_cluster = False
-                trash_threshold = 0.0
+                n_bootstrap_iterations = DEFAULT_PARAMS['n_bootstrap_iterations']
+                sample_fraction = DEFAULT_PARAMS['sample_fraction']
+                use_trash_cluster = DEFAULT_PARAMS['use_trash_cluster']
+                trash_threshold = DEFAULT_PARAMS['trash_threshold']
     
     # Experimental conditions
     st.subheader("🔬 Experimental Design")
@@ -419,7 +602,8 @@ if 'data' in st.session_state:
                     status_text.text("Grouping peptides by pattern...")
                     progress_bar.progress(10)
                     grouped, summary = group_by_peptide(data, columns_conditions, regex)
-                    
+          
+
                     if grouped.empty:
                         st.error("No valid peptides found after grouping.")
                         st.stop()
@@ -427,8 +611,9 @@ if 'data' in st.session_state:
                     # Step 2: CPM filtering
                     status_text.text("Applying CPM filtering...")
                     progress_bar.progress(30)
-                    filtered, fig_filter = filter_by_CPM(grouped, columns_conditions, cpm_threshold, min_count, plot=plot_filtering)
-                    
+                    # filtered, fig_filter = filter_by_CPM(grouped, columns_conditions, cpm_threshold, min_count, plot=plot_filtering)
+                    filtered, fig_filter = filter_by_CPM_v2_style(grouped, columns_conditions, cpm_threshold, min_count, plot=plot_filtering)
+
                     if filtered.empty:
                         st.error("No peptides remain after CPM filtering.")
                         st.stop()
@@ -517,10 +702,65 @@ if 'data' in st.session_state:
                                 validation_results = None
                         
                         # Merge clustering results with DE data
+                        # Note: clustering is done on variable peptides, so merge on variable_pep
                         clusters_df = clusters_df.merge(
-                            adj_DE.reset_index()[["Clean Peptide", "log2FoldChange", "padj", "-log10(padj)"]],
-                            left_on="Sequence", right_on="Clean Peptide", how="left"
+                            adj_DE.reset_index()[["Clean Peptide", "variable_pep", "log2FoldChange", "padj", "-log10(padj)"]],
+                            left_on="Sequence", right_on="variable_pep", how="left"
                         )
+                        
+                        # Generate improved logos from Clean Peptide (pattern + variable part)
+                        try:
+                            from Library.Clustering import _logo_from_pwm
+                            import logomaker as lm
+                            
+                            # Find the cluster column
+                            cluster_col = None
+                            for col in ['Cluster', 'Gn', 'cluster']:
+                                if col in clusters_df.columns:
+                                    cluster_col = col
+                                    break
+                            
+                            if cluster_col and 'Clean Peptide' in clusters_df.columns:
+                                # Create logos from Clean Peptides for each cluster
+                                improved_logos = {}
+                                for cluster_id in clusters_df[cluster_col].unique():
+                                    if pd.notna(cluster_id):
+                                        cluster_peptides = clusters_df[clusters_df[cluster_col] == cluster_id]['Clean Peptide'].dropna().tolist()
+                                    
+                                        if len(cluster_peptides) > 0:
+                                            # Convert sequences to PWM for Clean Peptides
+                                            max_len = max(len(seq) for seq in cluster_peptides)
+                                            sequences_aligned = [seq.ljust(max_len, '-') for seq in cluster_peptides]
+                                            
+                                            # Create position frequency matrix
+                                            aa_list = list('ACDEFGHIKLMNPQRSTVWY')
+                                            pfm = np.zeros((max_len, len(aa_list)))
+                                            
+                                            for i, pos in enumerate(range(max_len)):
+                                                pos_counts = {aa: 0 for aa in aa_list}
+                                                for seq in sequences_aligned:
+                                                    if pos < len(seq) and seq[pos] in aa_list:
+                                                        pos_counts[seq[pos]] += 1
+                                                
+                                                total = sum(pos_counts.values())
+                                                if total > 0:
+                                                    for j, aa in enumerate(aa_list):
+                                                        pfm[i, j] = pos_counts[aa] / total
+                                            
+                                            # Convert to DataFrame for logomaker
+                                            pwm_df = pd.DataFrame(pfm, columns=aa_list)
+                                            pwm_df.index = range(len(pwm_df))
+                                            
+                                            # Generate improved logo
+                                            improved_logos[cluster_id] = _logo_from_pwm(pwm_df, f"Cluster {cluster_id}")
+                                
+                                # Replace original logos with improved ones
+                                if improved_logos:
+                                    logos = improved_logos
+                                
+                        except Exception as e:
+                            print(f"Warning: Could not generate improved logos: {e}")
+                            # Keep original logos
                     else:
                         clusters_df = pd.DataFrame()
                         logos = {}
@@ -608,7 +848,12 @@ if st.session_state.analysis_complete and 'analysis_results' in st.session_state
         st.write(f"**After CPM Filter**: {results['filtered'].shape[0]} peptides retained")
         
         if not results['filtered'].empty:
-            st.dataframe(results['filtered'].head(10))
+            # Ensure proper data types for Arrow serialization
+            filtered_display_df = results['filtered'].head(10).copy()
+            for col in filtered_display_df.columns:
+                if filtered_display_df[col].dtype == 'object':
+                    filtered_display_df[col] = filtered_display_df[col].astype(str)
+            st.dataframe(filtered_display_df)
 
     with tab2:
         col_de1, col_de2 = st.columns(2)
@@ -627,6 +872,8 @@ if st.session_state.analysis_complete and 'analysis_results' in st.session_state
         st.subheader("Differential Expression Summary")
         summary_data = pd.DataFrame([results['de_summary']]).T
         summary_data.columns = ['Count']
+        # Ensure consistent data types for Arrow serialization
+        summary_data['Count'] = summary_data['Count'].astype(str)
         st.dataframe(summary_data, use_container_width=True)
     
     with tab3:
@@ -634,26 +881,148 @@ if st.session_state.analysis_complete and 'analysis_results' in st.session_state
             # Validation results if available
             if results['validation_results']:
                 val_res = results['validation_results']
-                st.subheader("🔬 Consensus Validation Results")
+                st.subheader("🔬 Clustering Quality Measurements")
                 
-                col_v1, col_v2, col_v3 = st.columns(3)
+                # Primary metrics
+                col_v1, col_v2, col_v3, col_v4 = st.columns(4)
                 with col_v1:
                     st.metric("Optimal K", val_res['optimal_k'])
                 with col_v2:
                     st.metric("Stability Score", f"{val_res['stability_score']:.3f}")
                 with col_v3:
                     st.metric("Silhouette Score", f"{val_res['silhouette_score']:.3f}")
+                with col_v4:
+                    # Add composite score if available
+                    if 'component_scores' in val_res:
+                        composite = val_res['component_scores'].get('composite', 0)
+                        st.metric("Composite Score", f"{composite:.3f}")
                 
-                # Quality interpretation
-                silhouette_score = val_res['silhouette_score']
-                if silhouette_score > 0.7:
-                    st.success("🎯 Excellent clustering quality")
-                elif silhouette_score > 0.5:
-                    st.info("✅ Good clustering quality")
-                elif silhouette_score > 0.25:
-                    st.warning("⚠️ Moderate clustering quality")
-                else:
-                    st.error("❌ Poor clustering quality")
+                # Additional quality metrics if available
+                if 'stability_scores' in val_res or 'silhouette_scores' in val_res:
+                    st.subheader("📈 Quality Metrics by K")
+                    
+                    # Create metrics comparison table
+                    metrics_data = []
+                    k_range = range(2, val_res['optimal_k'] + 3)  # Show range around optimal
+                    
+                    for k in k_range:
+                        row = {'K': k}
+                        if 'stability_scores' in val_res and k in val_res['stability_scores']:
+                            row['Stability'] = f"{val_res['stability_scores'][k]:.3f}"
+                        else:
+                            row['Stability'] = 'N/A'
+                            
+                        if 'silhouette_scores' in val_res and k in val_res['silhouette_scores']:
+                            row['Silhouette'] = f"{val_res['silhouette_scores'][k]:.3f}"  
+                        else:
+                            row['Silhouette'] = 'N/A'
+                            
+                        if 'bootstrap_scores' in val_res and k in val_res['bootstrap_scores']:
+                            row['Bootstrap Stability'] = f"{val_res['bootstrap_scores'][k]:.3f}"
+                        else:
+                            row['Bootstrap Stability'] = 'N/A'
+                            
+                        # Mark optimal K
+                        if k == val_res['optimal_k']:
+                            row['K'] = f"{k} ⭐"
+                            
+                        metrics_data.append(row)
+                    
+                    if metrics_data:
+                        metrics_df = pd.DataFrame(metrics_data)
+                        st.dataframe(metrics_df, use_container_width=True, hide_index=True)
+                
+                # Quality interpretation with more detail
+                st.subheader("🎯 Quality Assessment")
+                
+                col_q1, col_q2 = st.columns(2)
+                
+                with col_q1:
+                    silhouette_score = val_res['silhouette_score']
+                    st.write("**Cluster Separation Quality:**")
+                    if silhouette_score > 0.7:
+                        st.success("🎯 Excellent - Very well separated clusters")
+                    elif silhouette_score > 0.5:
+                        st.info("✅ Good - Well defined clusters")
+                    elif silhouette_score > 0.25:
+                        st.warning("⚠️ Moderate - Some cluster overlap")
+                    else:
+                        st.error("❌ Poor - Significant cluster overlap")
+                    
+                    st.write(f"Silhouette Score: **{silhouette_score:.3f}**")
+                
+                with col_q2:
+                    stability_score = val_res['stability_score'] 
+                    st.write("**Clustering Stability:**")
+                    if stability_score > 0.8:
+                        st.success("🏆 Highly Stable - Robust to data variations")
+                    elif stability_score > 0.6:
+                        st.info("✅ Stable - Reasonably robust")
+                    elif stability_score > 0.4:
+                        st.warning("⚠️ Moderately Stable - Some sensitivity")
+                    else:
+                        st.error("❌ Unstable - High sensitivity to variations")
+                    
+                    st.write(f"Stability Score: **{stability_score:.3f}**")
+                
+                # Show validation plot if available
+                if 'validation_plot' in results['figures'] and results['figures']['validation_plot']:
+                    st.subheader("📊 Validation Metrics Plot")
+                    st.pyplot(results['figures']['validation_plot'])
+            else:
+                # Calculate basic quality metrics for fixed K clustering
+                st.subheader("🔬 Clustering Quality Measurements")
+                
+                try:
+                    from sklearn.metrics import silhouette_score
+                    from Library.consensus_clustering import ConsensusClusteringValidator
+                    
+                    # Get cluster assignments and sequences
+                    sequences = results['clusters_df']['Sequence'].tolist()
+                    # Check for different possible cluster column names
+                    cluster_col = None
+                    for col in ['Cluster', 'Gn', 'cluster']:
+                        if col in results['clusters_df'].columns:
+                            cluster_col = col
+                            break
+                    
+                    if cluster_col is None:
+                        st.info("No cluster assignments found for quality calculation")
+                    else:
+                        clusters = results['clusters_df'][cluster_col].tolist()
+                        
+                        # Calculate silhouette score
+                        if len(set(clusters)) > 1:  # Need at least 2 clusters
+                            validator = ConsensusClusteringValidator()
+                            encoded_seqs = validator.encode_sequences(sequences)
+                            sil_score = silhouette_score(encoded_seqs, clusters)
+                        
+                            # Basic metrics display
+                            col_m1, col_m2, col_m3 = st.columns(3)
+                            with col_m1:
+                                st.metric("Number of Clusters", len(set(clusters)))
+                            with col_m2:
+                                st.metric("Silhouette Score", f"{sil_score:.3f}")
+                            with col_m3:
+                                st.metric("Sequences Clustered", len(sequences))
+                            
+                            # Quality interpretation
+                            st.subheader("🎯 Quality Assessment")
+                            if sil_score > 0.7:
+                                st.success("🎯 Excellent cluster separation")
+                            elif sil_score > 0.5:
+                                st.info("✅ Good cluster separation") 
+                            elif sil_score > 0.25:
+                                st.warning("⚠️ Moderate cluster separation")
+                            else:
+                                st.error("❌ Poor cluster separation")
+                            
+                            st.write(f"**Silhouette Score**: {sil_score:.3f}")
+                        else:
+                            st.info("Only one cluster found - quality metrics require multiple clusters")
+                        
+                except Exception as e:
+                    st.warning(f"Could not calculate quality metrics: {e}")
             
             # Sequence logos
             st.subheader("🎨 Sequence Logos")
@@ -664,9 +1033,73 @@ if st.session_state.analysis_complete and 'analysis_results' in st.session_state
                         st.write(f"**Cluster {k}**")
                         st.pyplot(fig)
             
+            # Box plots for differential expression metrics by cluster
+            if 'log2FoldChange' in results['clusters_df'].columns and 'padj' in results['clusters_df'].columns:
+                st.subheader("📈 Differential Expression by Cluster")
+                
+                try:
+                    import seaborn as sns
+                    import matplotlib.pyplot as plt
+                    
+                    # Find the cluster column
+                    cluster_col = None
+                    for col in ['Cluster', 'Gn', 'cluster']:
+                        if col in results['clusters_df'].columns:
+                            cluster_col = col
+                            break
+                    
+                    if cluster_col is None:
+                        st.info("No cluster assignments found for box plots")
+                    else:
+                        # Prepare data for plotting
+                        plot_columns = [cluster_col, 'log2FoldChange', 'padj', '-log10(padj)']
+                        available_columns = [col for col in plot_columns if col in results['clusters_df'].columns]
+                        
+                        plot_df = results['clusters_df'][available_columns].copy()
+                        plot_df = plot_df.dropna()
+                    
+                        if len(plot_df) > 0:
+                            fig, axes = plt.subplots(1, 3, figsize=(15, 5))
+                            
+                            # Log2 Fold Change boxplot
+                            if 'log2FoldChange' in plot_df.columns:
+                                sns.boxplot(data=plot_df, x=cluster_col, y='log2FoldChange', ax=axes[0])
+                                axes[0].set_title('Log2 Fold Change by Cluster')
+                                axes[0].set_xlabel('Cluster')
+                                axes[0].set_ylabel('Log2 Fold Change')
+                            
+                            # -log10(padj) boxplot
+                            if '-log10(padj)' in plot_df.columns:
+                                sns.boxplot(data=plot_df, x=cluster_col, y='-log10(padj)', ax=axes[1])
+                                axes[1].set_title('-Log10(Adjusted P-value) by Cluster')
+                                axes[1].set_xlabel('Cluster')
+                                axes[1].set_ylabel('-Log10(Adjusted P-value)')
+                            
+                            # padj boxplot (log scale)
+                            if 'padj' in plot_df.columns:
+                                sns.boxplot(data=plot_df, x=cluster_col, y='padj', ax=axes[2])
+                                axes[2].set_title('Adjusted P-value by Cluster')
+                                axes[2].set_xlabel('Cluster')
+                                axes[2].set_ylabel('Adjusted P-value')
+                                axes[2].set_yscale('log')
+                            
+                            plt.tight_layout()
+                            st.pyplot(fig)
+                            plt.close()
+                        else:
+                            st.info("No data available for differential expression box plots")
+                        
+                except Exception as e:
+                    st.warning(f"Could not generate box plots: {e}")
+            
             # Cluster data table
             st.subheader("📊 Cluster Assignments")
-            st.dataframe(results['clusters_df'].head(20), use_container_width=True)
+            # Ensure proper data types for Arrow serialization
+            cluster_display_df = results['clusters_df'].head(20).copy()
+            for col in cluster_display_df.columns:
+                if cluster_display_df[col].dtype == 'object':
+                    cluster_display_df[col] = cluster_display_df[col].astype(str)
+            st.dataframe(cluster_display_df, use_container_width=True)
         else:
             st.warning("No upregulated peptides found for clustering analysis.")
     
@@ -677,12 +1110,12 @@ if st.session_state.analysis_complete and 'analysis_results' in st.session_state
         st.write("**Parameters Used:**")
         params = st.session_state['analysis_params']
         param_df = pd.DataFrame([
-            ["Peptide Pattern", params['regex']],
-            ["CPM Threshold", params['cpm_threshold']],
-            ["Min Samples", params['min_count']],
+            ["Peptide Pattern", str(params['regex'])],
+            ["CPM Threshold", str(params['cpm_threshold'])],
+            ["Min Samples", str(params['min_count'])],
             ["Clustering Method", "Advanced" if params['use_advanced_clustering'] else "Basic"],
             ["Validation", "Enabled" if params['use_consensus_validation'] else "Disabled"],
-            ["Motif Length", params['motif_length']]
+            ["Motif Length", str(params['motif_length'])]
         ], columns=['Parameter', 'Value'])
         st.dataframe(param_df, use_container_width=True)
         

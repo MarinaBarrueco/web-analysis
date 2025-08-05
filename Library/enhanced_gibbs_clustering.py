@@ -1,9 +1,21 @@
+#!/usr/bin/env python3
 """
-Enhanced Gibbs Clustering with Consensus Validation
+Enhanced Gibbs Clustering with Integrated Validation
 
-This module provides an enhanced interface for Gibbs clustering that integrates
-with consensus clustering validation methods for robust cluster number selection
-and quality assessment.
+Unified interface combining Gibbs clustering with consensus validation methods.
+Provides automatic cluster number selection, quality assessment, and robust
+clustering with comprehensive validation metrics.
+
+Features:
+- Integration of basic and advanced Gibbs clustering algorithms
+- Automatic optimal cluster number selection using consensus validation
+- Comprehensive clustering quality metrics and assessment
+- Bootstrap validation for robustness testing
+- Parameter filtering for compatibility between different clustering modes
+- Unified result format with quality scores and interpretive guidance
+
+Author: Peptide Analysis Pipeline
+Version: 2.0
 """
 
 import numpy as np
@@ -210,24 +222,42 @@ class EnhancedGibbsClustering:
                                     k: int, 
                                     **kwargs) -> Any:
         """Run single Gibbs clustering"""
+        
+        # Filter out validation-specific parameters that shouldn't go to clustering classes
+        validation_params = {
+            'enable_bootstrap', 'n_bootstrap_iterations', 'sample_fraction',
+            'n_consensus_iterations', 'validation_enabled'
+        }
+        clustering_kwargs = {key: value for key, value in kwargs.items() 
+                           if key not in validation_params}
+        
         if self.use_advanced:
             # Use advanced Gibbs clustering
             clusterer = GibbsClusterAdvanced(
                 motif_length=self.motif_length,
                 num_clusters=k,
                 seed=self.random_seed,
-                **kwargs
+                **clustering_kwargs
             )
             clusterer.fit(sequences)
             return clusterer
         else:
+            # Filter out advanced-only parameters for basic clustering
+            basic_only_params = {
+                'num_seeds', 'iterations', 'temperature_start', 'temperature_steps',
+                'lambda_penalty', 'sigma_weight', 'sequence_weighting',
+                'background_model', 'use_trash_cluster', 'trash_threshold'
+            }
+            basic_kwargs = {key: value for key, value in clustering_kwargs.items() 
+                          if key not in basic_only_params}
+            
             # Use basic Gibbs clustering
             return gibbs_cluster(
                 sequences,
                 motif_length=self.motif_length,
                 num_clusters=k,
                 seed=self.random_seed,
-                **kwargs
+                **basic_kwargs
             )
     
     def plot_validation_summary(self, save_path: Optional[str] = None) -> plt.Figure:

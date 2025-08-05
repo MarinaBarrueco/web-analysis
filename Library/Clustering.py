@@ -1,6 +1,19 @@
-# ----------------------------------------------------------------------
-# Pure-Python Gibbs clustering + logo generation
-# ----------------------------------------------------------------------
+#!/usr/bin/env python3
+"""
+Basic Gibbs Clustering Implementation
+
+Pure-Python implementation of Gibbs sampling for peptide sequence clustering.
+Includes motif discovery, clustering assignments, and sequence logo generation.
+
+Features:
+- Gibbs sampling with configurable parameters
+- Position Weight Matrix (PWM) construction
+- Sequence logo visualization using logomaker
+- Clean amino acid encoding and decoding
+
+Author: Peptide Analysis Pipeline
+Version: 2.0
+"""
 from collections import defaultdict
 import numpy as np, pandas as pd, random, math, matplotlib.pyplot as plt
 import logomaker as lm                       # NEW
@@ -39,13 +52,39 @@ def _counts_to_pwm(counts, alpha=1.0):
     else:
         raise ValueError(f"Counts array must be 2D or 3D, got shape {counts.shape}")
 
-def _logo_from_pwm(pwm_df, title="logo"):
-    fig, ax = plt.subplots(figsize=(4,1.5))
-    lm.Logo(pwm_df, ax=ax, shade_below=.5, fade_below=.5, stack_order='small_on_top')
-    ax.set_xticks(range(pwm_df.shape[0]))
-    ax.set_xlabel("Position")
+def _logo_from_pwm(pwm_df, title="logo", significance_threshold=0.1):
+    """
+    Create an improved sequence logo with cleaned visualization
+    
+    Parameters:
+    -----------
+    pwm_df : pd.DataFrame
+        Position weight matrix
+    title : str
+        Logo title (will be hidden in improved version)
+    significance_threshold : float
+        Threshold for showing amino acids (remove noise)
+    """
+    fig, ax = plt.subplots(figsize=(max(4, pwm_df.shape[0] * 0.4), 1.5))
+    
+    # Filter PWM to show only significant amino acids
+    filtered_pwm = pwm_df.copy()
+    filtered_pwm[filtered_pwm < significance_threshold] = 0
+    
+    # Create logo with clean visualization
+    lm.Logo(filtered_pwm, ax=ax, shade_below=0.5, fade_below=0.5, stack_order='small_on_top')
+    
+    # Remove all axis decorations for clean look
+    ax.set_xticks([])
+    ax.set_xlabel("")
     ax.set_ylabel("")
-    ax.set_title(title, fontsize=10)
+    ax.set_title("")
+    ax.grid(False)
+    
+    # Remove axis spines for cleaner look
+    for spine in ax.spines.values():
+        spine.set_visible(False)
+    
     plt.tight_layout()
     return fig
 

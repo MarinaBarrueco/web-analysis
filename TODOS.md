@@ -1,9 +1,6 @@
 # List of TO-DOs 
 
-- Fix the plotting of the per cluster graphs
-- Tidy up the repositiry  
-- Add a file with the teoretical explanation of what it is doing in the filtering and analysis phase
-- domument in detail every option for the analysis to make it clear for the user what they mean
-- organise the UI so that it looks more like a dashboard with smaller graphs that expand when cliked in stead of big graphs that fill the whole screan
-- asses the difencences in the analysis and filtering from the jupyter notebook
-
+- Tidy up the python souce files and functions to make the code more mantainable following common software developemt good practices.
+- Write instructions in the dashboard for the user to undestand the different options and how the input file must look like
+- Update the read me file to make it consistent with the current version
+- write a generator of sythetic peptide data with tuneable parameters to asses that the pipeline works as it should

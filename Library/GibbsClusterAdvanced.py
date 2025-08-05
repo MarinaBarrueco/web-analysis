@@ -1,16 +1,22 @@
+#!/usr/bin/env python3
 """
 Advanced Gibbs Clustering Implementation
-Based on GibbsCluster-2.0e_SA.pl
 
-This implementation includes:
-- Multiple seeds for better convergence
-- Temperature annealing (simulated annealing)
-- Kullback-Leibler divergence calculation
-- Support for insertions and deletions
-- Sequence weighting
-- Background frequency models
-- Trash cluster for outliers
-- Comprehensive result reporting
+Enhanced Gibbs sampling implementation based on GibbsCluster-2.0e_SA.pl.
+Includes advanced features for robust peptide sequence clustering and motif discovery.
+
+Features:
+- Multiple seeds for better convergence assessment
+- Temperature annealing (simulated annealing) schedule
+- Kullback-Leibler divergence calculation for cluster quality
+- Support for insertions and deletions in sequences
+- Flexible sequence weighting schemes
+- Multiple background frequency models (flat, BLOSUM, data-derived)
+- Trash cluster for outlier sequence handling
+- Comprehensive clustering metrics and reporting
+
+Author: Peptide Analysis Pipeline
+Version: 2.0
 """
 
 import numpy as np
@@ -422,14 +428,29 @@ class GibbsClusterAdvanced:
         logos = {}
         for k, pwm in enumerate(pwms):
             if cluster_sizes[k] > 0:
-                fig, ax = plt.subplots(figsize=(6, 2))
-                
                 try:
-                    logo = lm.Logo(pwm, ax=ax, shade_below=0.5, fade_below=0.5)
-                    ax.set_title(f'Cluster {k+1} (n={cluster_sizes[k]}, '
-                               f'KLD={cluster_klds[k]:.3f})', fontsize=12)
-                    ax.set_xlabel('Position')
-                    ax.set_ylabel('Bits')
+                    # Use improved logo visualization
+                    fig, ax = plt.subplots(figsize=(max(6, pwm.shape[0] * 0.4), 2))
+                    
+                    # Filter PWM to show only significant amino acids (remove noise)
+                    significance_threshold = 0.1
+                    filtered_pwm = pwm.copy()
+                    filtered_pwm[filtered_pwm < significance_threshold] = 0
+                    
+                    # Create logo with clean visualization
+                    logo = lm.Logo(filtered_pwm, ax=ax, shade_below=0.5, fade_below=0.5, stack_order='small_on_top')
+                    
+                    # Remove all axis decorations for clean look
+                    ax.set_xticks([])
+                    ax.set_xlabel("")
+                    ax.set_ylabel("")
+                    ax.set_title("")
+                    ax.grid(False)
+                    
+                    # Remove axis spines for cleaner look
+                    for spine in ax.spines.values():
+                        spine.set_visible(False)
+                    
                     plt.tight_layout()
                     logos[k+1] = fig
                 except Exception as e:

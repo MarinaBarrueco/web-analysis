@@ -1,5 +1,21 @@
+#!/usr/bin/env python3
 """
-Runtime Monitoring and Safety System for Peptide Analysis Pipeline
+Runtime Monitoring and Safety System
+
+Comprehensive monitoring system for tracking analysis pipeline performance,
+resource usage, and potential issues. Provides real-time feedback and
+safety checks throughout the analysis workflow.
+
+Features:
+- Real-time performance monitoring and timing
+- Memory and resource usage tracking
+- Progress tracking with step-by-step timing
+- Error detection and graceful failure handling
+- Analysis step validation and safety checks
+- Comprehensive logging and reporting capabilities
+
+Author: Peptide Analysis Pipeline
+Version: 2.0
 """
 
 import time

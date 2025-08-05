@@ -1,4 +1,20 @@
 
+#!/usr/bin/env python3
+"""
+Peptide Analysis Core Library
+
+Core functions for peptide library analysis including:
+- Pattern-based peptide filtering and grouping
+- CPM (Counts Per Million) normalization and filtering  
+- DESeq2-based differential expression analysis
+- Statistical testing and significance classification
+- Data visualization (MA plots, volcano plots, histograms)
+- File I/O and clustering result processing
+
+Author: Peptide Analysis Pipeline
+Version: 2.0
+"""
+
 import matplotlib.pyplot as plt
 import seaborn as sns
 import pandas as pd
@@ -11,6 +27,7 @@ from matplotlib.patches import Patch
 # import rpy2.robjects as ro
 from pydeseq2.dds import DeseqDataSet
 from pydeseq2.ds import DeseqStats
+from typing import Any
 
 
 # get the rute from the current file
@@ -99,13 +116,14 @@ def group_by_peptide(df: pd.DataFrame, conditions: dict, pattern: str):
     except re.error as e:
         raise ValueError(f"Error extracting pattern: {e}")
     
+    # From here..
     # Handle amino acid replacements safely
     df["Clean Peptide"] = df['Clean Peptide'].fillna("").astype(str).str.replace("*", "Q", regex=False)
 
     # Drop rows where Clean Peptide is empty or NaN
-    df = df[df["Clean Peptide"].str.len() > 0].copy()
-    df = df[df["Clean Peptide"] != "nan"].copy()
-
+    df = df[df["Clean Peptide"].str.len() > 0]
+    df = df[df["Clean Peptide"] != "nan"]
+    # to here.. makes the difference with the previous version
     if df.empty:
         print("Warning: No peptides matched the specified pattern")
         return pd.DataFrame(), summary
@@ -128,27 +146,43 @@ def plot_histograms(df_before, df_after) -> plt.Figure:
     fig, axes = plt.subplots(2, 2, figsize=(12, 10))
     sns.set_style("whitegrid")
 
+    # Filter out zero/negative values for log scale plots
+    def filter_positive(data):
+        return data[data > 0]
+
     # Controls
-    sns.histplot(df_before["Control Count"], bins=50, color="blue", alpha=0.5, label="Before", ax=axes[0, 0], log_scale=True)
-    sns.histplot(df_after["Control Count"], bins=50, color="red", alpha=0.5, label="After", ax=axes[0, 0], log_scale=True)
+    ctrl_before = filter_positive(df_before["Control Count"])
+    ctrl_after = filter_positive(df_after["Control Count"])
+    if len(ctrl_before) > 0 and len(ctrl_after) > 0:
+        sns.histplot(ctrl_before, bins=50, color="blue", alpha=0.5, label="Before", ax=axes[0, 0], log_scale=True)
+        sns.histplot(ctrl_after, bins=50, color="red", alpha=0.5, label="After", ax=axes[0, 0], log_scale=True)
     axes[0, 0].set_title("Control Count Distribution")
     axes[0, 0].legend()
 
     # Experiments
-    sns.histplot(df_before["Experiment Count"], bins=50, color="blue", alpha=0.5, label="Before", ax=axes[0, 1], log_scale=True)
-    sns.histplot(df_after["Experiment Count"], bins=50, color="red", alpha=0.5, label="After", ax=axes[0, 1], log_scale=True)
+    exp_before = filter_positive(df_before["Experiment Count"])
+    exp_after = filter_positive(df_after["Experiment Count"])
+    if len(exp_before) > 0 and len(exp_after) > 0:
+        sns.histplot(exp_before, bins=50, color="blue", alpha=0.5, label="Before", ax=axes[0, 1], log_scale=True)
+        sns.histplot(exp_after, bins=50, color="red", alpha=0.5, label="After", ax=axes[0, 1], log_scale=True)
     axes[0, 1].set_title("Experiment Count Distribution")
     axes[0, 1].legend()
 
     # CPM Control
-    sns.histplot(df_before["Control CPM"], bins=50, color="blue", alpha=0.5, label="Before", ax=axes[1, 0], log_scale=True)
-    sns.histplot(df_after["Control CPM"], bins=50, color="red", alpha=0.5, label="After", ax=axes[1, 0], log_scale=True)
+    cpm_ctrl_before = filter_positive(df_before["Control CPM"])
+    cpm_ctrl_after = filter_positive(df_after["Control CPM"])
+    if len(cpm_ctrl_before) > 0 and len(cpm_ctrl_after) > 0:
+        sns.histplot(cpm_ctrl_before, bins=50, color="blue", alpha=0.5, label="Before", ax=axes[1, 0], log_scale=True)
+        sns.histplot(cpm_ctrl_after, bins=50, color="red", alpha=0.5, label="After", ax=axes[1, 0], log_scale=True)
     axes[1, 0].set_title("CPM Control Distribution")
     axes[1, 0].legend()
 
     # CPM Experiment
-    sns.histplot(df_before["Experiment CPM"], bins=50, color="blue", alpha=0.5, label="Before", ax=axes[1, 1], log_scale=True)
-    sns.histplot(df_after["Experiment CPM"], bins=50, color="red", alpha=0.5, label="After", ax=axes[1, 1], log_scale=True)
+    cpm_exp_before = filter_positive(df_before["Experiment CPM"])
+    cpm_exp_after = filter_positive(df_after["Experiment CPM"])
+    if len(cpm_exp_before) > 0 and len(cpm_exp_after) > 0:
+        sns.histplot(cpm_exp_before, bins=50, color="blue", alpha=0.5, label="Before", ax=axes[1, 1], log_scale=True)
+        sns.histplot(cpm_exp_after, bins=50, color="red", alpha=0.5, label="After", ax=axes[1, 1], log_scale=True)
     axes[1, 1].set_title("CPM Experiment Distribution")
     axes[1, 1].legend()
 
@@ -287,6 +321,103 @@ def filter_by_CPM(df: pd.DataFrame,
 
     print(f"CPM filtering: {len(df_before)} -> {len(df_after)} peptides retained")
     
+    return df_after, fig
+
+def filter_by_CPM_v2_style(
+        df: pd.DataFrame,
+        conditions: dict,
+        threshold_count: int | None = None,
+        threshold_cpm: float | None = None,
+        output_path: str | None = None,
+        plot: bool = False
+) -> tuple[pd.DataFrame, Any | None]:
+    """
+    Filters peptides using version-2 logic (global Experiment Count + CPM_Exp),
+    but follows the structure and defensive programming style of version 1.
+
+    Parameters
+    ----------
+    df : pd.DataFrame
+        Peptide-level count matrix.
+    conditions : dict
+        {column_name: "Control" | "Experiment"} mapping.
+    threshold_count : int, optional
+        Minimum aggregate Experiment Count required (version-2 `threshold_1`).
+    threshold_cpm : float, optional
+        Minimum aggregate CPM_Exp required (version-2 `threshold_2`).
+    output_path : str, optional
+        CSV destination for the filtered table.  If None, nothing is saved.
+    plot : bool, default False
+        Whether to return a before/after histogram figure.
+
+    Returns
+    -------
+    (filtered_df, figure_or_None)
+    """
+
+    # ─────────────────────────── 1. Input validation ──────────────────────────
+    if df.empty:
+        print("Warning: input DataFrame is empty.")
+        return df.copy(), None
+
+    if threshold_count is not None and threshold_count < 0:
+        raise ValueError("`threshold_count` must be non-negative.")
+
+    if threshold_cpm is not None and threshold_cpm < 0:
+        raise ValueError("`threshold_cpm` must be non-negative.")
+
+    # ─────────────────────── 2. Column set-up via `conditions` ───────────────
+    ctrl_cols = [c for c, v in conditions.items() if v == "Control"   and c in df.columns]
+    exp_cols  = [c for c, v in conditions.items() if v == "Experiment" and c in df.columns]
+
+    if not ctrl_cols or not exp_cols:
+        raise ValueError("No valid control or experiment columns identified.")
+
+    # ─────────────── 3. Aggregate counts & CPM (version-2 logic) ─────────────
+    df_work = df.copy()                       # do **not** mutate caller’s df
+    df_work["Control Count"]    = df_work[ctrl_cols].sum(axis=1)
+    df_work["Experiment Count"] = df_work[exp_cols].sum(axis=1)
+
+    total_ctrl = df_work["Control Count"].sum()
+    total_exp  = df_work["Experiment Count"].sum()
+
+    df_work["CPM_Control"] = (df_work["Control Count"]    / total_ctrl * 1e6) if total_ctrl else 0
+    df_work["CPM_Exp"]     = (df_work["Experiment Count"] / total_exp  * 1e6) if total_exp  else 0
+
+    # ───────────────────── 4. Store “before” snapshot for plots ──────────────
+    df_before = df_work.copy()
+
+    # ────────────────────────── 5. Apply dual thresholds ─────────────────────
+    mask = pd.Series(True, index=df_work.index)
+    if threshold_count is not None:
+        mask &= df_work["Experiment Count"] > threshold_count
+    if threshold_cpm   is not None:
+        mask &= df_work["CPM_Exp"]         > threshold_cpm
+
+    df_after = df_work.loc[mask].copy()
+    df_after.reset_index(drop=True, inplace=True)
+
+    # ──────────────────────── 6. Optional peptide cleaning ───────────────────
+    if "Clean Peptide" in df_after.columns:
+        # substitute stop codon (*) with Q, preserving other chars
+        df_after["Clean Peptide"] = df_after["Clean Peptide"].str.replace(r"\*", "Q", regex=True)
+
+    # ──────────────────────── 7. Optional disk output ────────────────────────
+    if output_path:
+        os.makedirs(os.path.dirname(output_path), exist_ok=True)
+        df_after.to_csv(output_path, index=False)
+
+    # ───────────────────────── 8. Optional plotting ──────────────────────────
+    fig = None
+    if plot and not df_before.empty and not df_after.empty:
+        try:
+            fig = plot_histograms(df_before, df_after)   # ← your helper
+        except Exception as e:
+            print(f"Warning: could not generate histogram: {e}")
+
+    # ───────────────────────────── 9. Reporting ──────────────────────────────
+    print(f"Global-CPM filtering: {len(df_before)} → {len(df_after)} peptides retained")
+
     return df_after, fig
 
 def draw_correlation_matrix(df: pd.DataFrame) -> plt.Figure:
@@ -651,11 +782,25 @@ def volcano_plot(
     ax.axhline(-np.log10(significance_threshold), color="black", linestyle="--", linewidth=1)
 
     # 7) Annotate top up-regulated points
-    mask = (
+    mask_up = (
         (df["log2FoldChange"] >  log2fc_threshold) &
         (df["neg_log10_padj"]   > -np.log10(significance_threshold * annotate_threshold))
     )
-    for idx, row in df.loc[mask].iterrows():
+    for idx, row in df.loc[mask_up].iterrows():
+        ax.text(
+            row["log2FoldChange"],
+            row["neg_log10_padj"] + 0.1,
+            str(idx),
+            fontsize=8,
+            ha="center"
+        )
+    
+    # 8) Annotate top down-regulated points
+    mask_down = (
+        (df["log2FoldChange"] < -log2fc_threshold) &
+        (df["neg_log10_padj"]   > -np.log10(significance_threshold * annotate_threshold))
+    )
+    for idx, row in df.loc[mask_down].iterrows():
         ax.text(
             row["log2FoldChange"],
             row["neg_log10_padj"] + 0.1,
@@ -664,7 +809,7 @@ def volcano_plot(
             ha="center"
         )
 
-    # 8) Legend and labels
+    # 9) Legend and labels
     legend_elems = [
         Patch(facecolor="grey", label="Not significant"),
         Patch(facecolor="red",  label=f"Up (|FC|>{log2fc_threshold}, FDR>{significance_threshold})"),
@@ -678,7 +823,7 @@ def volcano_plot(
     ax.grid(True, linestyle="--", alpha=0.5)
     plt.tight_layout()
 
-    # 9) Save if requested
+    # 10) Save if requested
     if output_path:
         fig.savefig(output_path, dpi=300)
 
