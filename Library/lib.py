@@ -1,16 +1,33 @@
 
-import numpy as np
+#!/usr/bin/env python3
+"""
+Peptide Analysis Core Library
+
+Core functions for peptide library analysis including:
+- Pattern-based peptide filtering and grouping
+- CPM (Counts Per Million) normalization and filtering  
+- DESeq2-based differential expression analysis
+- Statistical testing and significance classification
+- Data visualization (MA plots, volcano plots, histograms)
+- File I/O and clustering result processing
+
+Author: Peptide Analysis Pipeline
+Version: 2.0
+"""
+
 import matplotlib.pyplot as plt
 import seaborn as sns
 import pandas as pd
 import os
 import subprocess
 import re
+import numpy as np
 from matplotlib.patches import Patch
 # from rpy2.robjects import pandas2ri
 # import rpy2.robjects as ro
 from pydeseq2.dds import DeseqDataSet
 from pydeseq2.ds import DeseqStats
+from typing import Any
 
 
 # get the rute from the current file
@@ -20,64 +37,103 @@ GIBS_CLUSTER_BIN = os.path.join(CURRENT_DIR, "gibbscluster-2.0/gibbscluster")
 
 
 
-def group_by_peptide(df:pd.DataFrame, conditions, pattern):
+def group_by_peptide(df: pd.DataFrame, conditions: dict, pattern: str):
     """
     Groups peptides based on a given pattern(the library peptide form) and aggregates their counts.
 
     This function processes a DataFrame containing peptide sequences and their respective counts
     across multiple samples. It calculates the total peptide count, filters peptides matching a
-    specific pattern, and aggregates them based on a cleaned version of the peptide sequence (without the GSG linker).
+    specific pattern, and aggregates them based on a cleaned version of the peptide sequence.
 
     Parameters:
     -----------
     df : pandas.DataFrame
-        A DataFrame where each row represents a peptide with its associated counts. Merged dataframe from the Data_Merge python script.
-    n_samples : int
-        The number of sample columns to consider for aggregation, normally 6, 3 replicates of the protein panning and three for the control panning.
+        A DataFrame where each row represents a peptide with its associated counts.
+    conditions : dict
+        Dictionary mapping sample column names to condition labels (Control/Experiment).
     pattern : str
-        A regular expression pattern used to filter and extract peptides: a regular expression matching the peptide library.
-    out_dir : str
-        The output directory where the grouped peptide data will be saved as a CSV file.
+        A regular expression pattern used to filter and extract peptides.
 
     Returns:
     --------
-    pandas.DataFrame
-        A DataFrame grouped by the cleaned peptide sequences, with counts aggregated and sorted.
-        The valid peptides that have the form of the library. 
+    tuple: (pandas.DataFrame, dict)
+        A DataFrame grouped by the cleaned peptide sequences, with counts aggregated and sorted,
+        and a summary dictionary with statistics.
     """
-
-    # Add a column for the total count across specific columns
-
-    # WARNNIG: THE PEPTIDE COLUMN MUST BE NAMED 'peptide' IN THE INPUT DATAFRAME
+    
+    # Input validation
+    if df.empty:
+        raise ValueError("Input DataFrame is empty")
+    
+    if "peptide" not in df.columns:
+        raise ValueError("DataFrame must contain a 'peptide' column")
+    
+    # Validate that all condition columns exist
+    missing_cols = [col for col in conditions.keys() if col not in df.columns]
+    if missing_cols:
+        raise ValueError(f"Condition columns not found in DataFrame: {missing_cols}")
+    
+    # Create working copy and handle null values
     df = df[["peptide"] + list(conditions.keys())].copy()
-    df["Total Count"] = df[conditions.keys()].sum(axis=1)
-
+    
+    # Remove rows with null peptides and replace NaN values with 0
+    df = df.dropna(subset=["peptide"])
+    df[list(conditions.keys())] = df[list(conditions.keys())].fillna(0)
+    
+    # Convert peptide column to string and remove obvious invalid entries
+    df["peptide"] = df["peptide"].astype(str)
+    df = df[df["peptide"] != "nan"]
+    df = df[df["peptide"] != ""]
+    df = df[df["peptide"].str.len() > 0]
+    
+    # Calculate total count with validation for zero division
+    df["Total Count"] = df[list(conditions.keys())].sum(axis=1)
+    
     # Calculate total peptides and valid peptides
     total_peptides = df["Total Count"].sum()
-    df["Consistent"] = df["peptide"].astype(str).str.contains(pattern)
+    
+    if total_peptides == 0:
+        print("Warning: No peptides with non-zero counts found")
+        return pd.DataFrame(), {"Total Peptides": 0, "Valid Peptides": 0, "Success Rate": "0.00%"}
+    
+    # Pattern matching with error handling
+    try:
+        df["Consistent"] = df["peptide"].str.contains(pattern, regex=True, na=False)
+    except re.error as e:
+        raise ValueError(f"Invalid regular expression pattern: {pattern}. Error: {e}")
+    
     valid_peptides = df.loc[df["Consistent"], "Total Count"].sum()
-
-    # Print results
-
     
     summary = {
-        "Total Peptides": total_peptides,
-        "Valid Peptides": valid_peptides,
-        "Success Rate": f"{100 * valid_peptides / total_peptides:.2f}%"
+        "Total Peptides": int(total_peptides),
+        "Valid Peptides": int(valid_peptides),
+        "Success Rate": f"{100 * valid_peptides / total_peptides:.2f}%" if total_peptides > 0 else "0.00%"
     }
 
+    # Extract the clean peptide matching the pattern with error handling
+    try:
+        df["Clean Peptide"] = df['peptide'].str.extract(f"({pattern})", expand=False)
+    except re.error as e:
+        raise ValueError(f"Error extracting pattern: {e}")
+    
+    # From here..
+    # Handle amino acid replacements safely
+    df["Clean Peptide"] = df['Clean Peptide'].fillna("").astype(str).str.replace("*", "Q", regex=False)
 
-    # Extract the clean peptide matching the pattern
-    df["Clean Peptide"] = df['peptide'].astype(str).str.extract(f"({pattern})", expand=False)
-    df["Clean Peptide"] = df['Clean Peptide'].astype(str).str.replace("*", "Q")
+    # Drop rows where Clean Peptide is empty or NaN
+    df = df[df["Clean Peptide"].str.len() > 0]
+    df = df[df["Clean Peptide"] != "nan"]
+    # to here.. makes the difference with the previous version
+    if df.empty:
+        print("Warning: No peptides matched the specified pattern")
+        return pd.DataFrame(), summary
 
     # Aggregate by clean peptide and sort
     df_grouped = df.groupby("Clean Peptide", as_index=False).sum(numeric_only=True)
     df_grouped = df_grouped.sort_values("Total Count", ascending=False)
-
     df_grouped.reset_index(inplace=True, drop=True)
 
-    # Drop unnecessary column
+    # Drop unnecessary columns
     df_grouped = df_grouped.drop(columns=["Consistent"], errors='ignore')
 
     return df_grouped, summary
@@ -90,61 +146,279 @@ def plot_histograms(df_before, df_after) -> plt.Figure:
     fig, axes = plt.subplots(2, 2, figsize=(12, 10))
     sns.set_style("whitegrid")
 
+    # Filter out zero/negative values for log scale plots
+    def filter_positive(data):
+        return data[data > 0]
+
     # Controls
-    sns.histplot(df_before["Control Count"], bins=50, color="blue", alpha=0.5, label="Before", ax=axes[0, 0], log_scale=True)
-    sns.histplot(df_after["Control Count"], bins=50, color="red", alpha=0.5, label="After", ax=axes[0, 0], log_scale=True)
+    ctrl_before = filter_positive(df_before["Control Count"])
+    ctrl_after = filter_positive(df_after["Control Count"])
+    if len(ctrl_before) > 0 and len(ctrl_after) > 0:
+        sns.histplot(ctrl_before, bins=50, color="blue", alpha=0.5, label="Before", ax=axes[0, 0], log_scale=True)
+        sns.histplot(ctrl_after, bins=50, color="red", alpha=0.5, label="After", ax=axes[0, 0], log_scale=True)
     axes[0, 0].set_title("Control Count Distribution")
     axes[0, 0].legend()
 
     # Experiments
-    sns.histplot(df_before["Experiment Count"], bins=50, color="blue", alpha=0.5, label="Before", ax=axes[0, 1], log_scale=True)
-    sns.histplot(df_after["Experiment Count"], bins=50, color="red", alpha=0.5, label="After", ax=axes[0, 1], log_scale=True)
+    exp_before = filter_positive(df_before["Experiment Count"])
+    exp_after = filter_positive(df_after["Experiment Count"])
+    if len(exp_before) > 0 and len(exp_after) > 0:
+        sns.histplot(exp_before, bins=50, color="blue", alpha=0.5, label="Before", ax=axes[0, 1], log_scale=True)
+        sns.histplot(exp_after, bins=50, color="red", alpha=0.5, label="After", ax=axes[0, 1], log_scale=True)
     axes[0, 1].set_title("Experiment Count Distribution")
     axes[0, 1].legend()
 
     # CPM Control
-    sns.histplot(df_before["Control CPM"], bins=50, color="blue", alpha=0.5, label="Before", ax=axes[1, 0], log_scale=True)
-    sns.histplot(df_after["Control CPM"], bins=50, color="red", alpha=0.5, label="After", ax=axes[1, 0], log_scale=True)
+    cpm_ctrl_before = filter_positive(df_before["Control CPM"])
+    cpm_ctrl_after = filter_positive(df_after["Control CPM"])
+    if len(cpm_ctrl_before) > 0 and len(cpm_ctrl_after) > 0:
+        sns.histplot(cpm_ctrl_before, bins=50, color="blue", alpha=0.5, label="Before", ax=axes[1, 0], log_scale=True)
+        sns.histplot(cpm_ctrl_after, bins=50, color="red", alpha=0.5, label="After", ax=axes[1, 0], log_scale=True)
     axes[1, 0].set_title("CPM Control Distribution")
     axes[1, 0].legend()
 
     # CPM Experiment
-    sns.histplot(df_before["Experiment CPM"], bins=50, color="blue", alpha=0.5, label="Before", ax=axes[1, 1], log_scale=True)
-    sns.histplot(df_after["Experiment CPM"], bins=50, color="red", alpha=0.5, label="After", ax=axes[1, 1], log_scale=True)
+    cpm_exp_before = filter_positive(df_before["Experiment CPM"])
+    cpm_exp_after = filter_positive(df_after["Experiment CPM"])
+    if len(cpm_exp_before) > 0 and len(cpm_exp_after) > 0:
+        sns.histplot(cpm_exp_before, bins=50, color="blue", alpha=0.5, label="Before", ax=axes[1, 1], log_scale=True)
+        sns.histplot(cpm_exp_after, bins=50, color="red", alpha=0.5, label="After", ax=axes[1, 1], log_scale=True)
     axes[1, 1].set_title("CPM Experiment Distribution")
     axes[1, 1].legend()
 
     plt.tight_layout()
     return fig
 
-def filter_by_CPM(df: pd.DataFrame,conditions: dict, threshold_1=None, threshold_2=None, plot=False) -> tuple[pd.DataFrame, plt.Figure | None]:
-    """
-    Filters peptides based on CPM thresholds and returns filtered dataframe + histogram figure.
-    """
+# def filter_by_CPM(df: pd.DataFrame,conditions: dict, threshold_1=None, threshold_2=None, plot=False) -> tuple[pd.DataFrame, plt.Figure | None]:
+#     """
+#     Filters peptides based on CPM thresholds and returns filtered dataframe + histogram figure.
+#     """
 
-    control_cols = [col for col, value in conditions.items() if value == "Control" and col in df.columns]
-    experiment_cols = [col for col, value in conditions.items() if value == "Experiment" and col in df.columns]
+#     control_cols = [col for col, value in conditions.items() if value == "Control" and col in df.columns]
+#     experiment_cols = [col for col, value in conditions.items() if value == "Experiment" and col in df.columns]
 
-    df["Control Count"] = df[control_cols].sum(axis=1)
-    df["Experiment Count"] = df[experiment_cols].sum(axis=1)
+#     df["Control Count"] = df[control_cols].sum(axis=1)
+#     df["Experiment Count"] = df[experiment_cols].sum(axis=1)
 
-    total_ctrl, total_exp = df["Control Count"].sum(), df["Experiment Count"].sum()
-    df["Control CPM"] = (df["Control Count"] / total_ctrl * 1e6) if total_ctrl > 0 else 0
-    df["Experiment CPM"] = (df["Experiment Count"] / total_exp * 1e6) if total_exp > 0 else 0
+#     total_ctrl, total_exp = df["Control Count"].sum(), df["Experiment Count"].sum()
+#     df["Control CPM"] = (df["Control Count"] / total_ctrl * 1e6) if total_ctrl > 0 else 0
+#     df["Experiment CPM"] = (df["Experiment Count"] / total_exp * 1e6) if total_exp > 0 else 0
 
-    df_before = df.copy()
-    if threshold_1 is not None:
-        df = df[df["Experiment Count"] > threshold_1]
-    if threshold_2 is not None:
-        df = df[df["Experiment CPM"] > threshold_2]
+#     df_before = df.copy()
+#     if threshold_1 is not None:
+#         df = df[df["Experiment Count"] > threshold_1]
+#     if threshold_2 is not None:
+#         df = df[df["Experiment CPM"] > threshold_2]
 
-    df = df.reset_index(drop=True)
+#     df = df.reset_index(drop=True)
     
 
-    fig = plot_histograms(df_before, df) if plot else None
-    return df, fig
+#     fig = plot_histograms(df_before, df) if plot else None
+#     return df, fig
 
+def filter_by_CPM(df: pd.DataFrame,
+                  conditions: dict,
+                  cpm_thresh: float,
+                  min_samples: int,
+                  plot: bool = False):
+    """
+    Filters peptides based on CPM (counts per million) thresholds.
+    
+    Parameters:
+    -----------
+    df : pd.DataFrame
+        Input DataFrame with peptide counts
+    conditions : dict
+        Dictionary mapping column names to conditions (Control/Experiment)  
+    cpm_thresh : float
+        CPM threshold for filtering
+    min_samples : int
+        Minimum number of samples that must meet the threshold
+    plot : bool
+        Whether to generate comparison plots
+        
+    Returns:
+    --------
+    tuple: (filtered_df, figure or None)
+    """
+    
+    # Input validation
+    if df.empty:
+        print("Warning: Input DataFrame is empty")
+        return df.copy(), None
+    
+    if cpm_thresh < 0:
+        raise ValueError("CPM threshold must be non-negative")
+    
+    if min_samples < 0:
+        raise ValueError("Minimum samples must be non-negative")
+    
+    # Separate control and experiment columns
+    ctrl_cols = [c for c, v in conditions.items() if v == "Control" and c in df.columns]
+    exp_cols = [c for c, v in conditions.items() if v == "Experiment" and c in df.columns]
+    
+    if not exp_cols:
+        print("Warning: No experiment columns found for CPM filtering")
+        return df.copy(), None
+    
+    # Calculate library sizes (total counts per sample) with validation
+    lib_sizes = df[exp_cols].sum()
+    
+    # Check for zero library sizes
+    zero_lib_samples = lib_sizes[lib_sizes == 0].index.tolist()
+    if zero_lib_samples:
+        print(f"Warning: Zero library sizes found in samples: {zero_lib_samples}")
+        # Remove zero library size samples from consideration
+        exp_cols = [c for c in exp_cols if c not in zero_lib_samples]
+        if not exp_cols:
+            print("Warning: All experiment samples have zero counts")
+            return df.copy(), None
+        lib_sizes = lib_sizes[exp_cols]
+    
+    # Calculate CPM with safe division
+    cpm = df[exp_cols].div(lib_sizes, axis=1) * 1e6
+    
+    # Apply filtering criteria
+    keep = (cpm >= cpm_thresh).sum(axis=1) >= min_samples
+    
+    df_before = df.copy()
+    df_after = df[keep].copy()
+    
+    # Calculate summary statistics for plotting
+    if ctrl_cols:
+        df_before["Control Count"] = df_before[ctrl_cols].sum(axis=1)
+        ctrl_total_before = df_before["Control Count"].sum()
+        df_before["Control CPM"] = (df_before["Control Count"] / ctrl_total_before * 1e6) if ctrl_total_before > 0 else 0
+        
+        df_after["Control Count"] = df_after[ctrl_cols].sum(axis=1) if not df_after.empty else pd.Series(dtype=float)
+        ctrl_total_after = df_after["Control Count"].sum() if not df_after.empty else 0
+        df_after["Control CPM"] = (df_after["Control Count"] / ctrl_total_after * 1e6) if ctrl_total_after > 0 else 0
+    else:
+        df_before["Control Count"] = 0
+        df_before["Control CPM"] = 0
+        df_after["Control Count"] = 0
+        df_after["Control CPM"] = 0
+    
+    # Experiment counts and CPM
+    df_before["Experiment Count"] = df_before[exp_cols].sum(axis=1)
+    exp_total_before = df_before["Experiment Count"].sum()
+    df_before["Experiment CPM"] = (df_before["Experiment Count"] / exp_total_before * 1e6) if exp_total_before > 0 else 0
+    
+    df_after["Experiment Count"] = df_after[exp_cols].sum(axis=1) if not df_after.empty else pd.Series(dtype=float)
+    exp_total_after = df_after["Experiment Count"].sum() if not df_after.empty else 0  
+    df_after["Experiment CPM"] = (df_after["Experiment Count"] / exp_total_after * 1e6) if exp_total_after > 0 else 0
 
+    df_after.reset_index(drop=True, inplace=True)
+    
+    # Generate plot if requested and we have data
+    fig = None
+    if plot and not df_before.empty and not df_after.empty:
+        try:
+            fig = plot_histograms(df_before, df_after)
+        except Exception as e:
+            print(f"Warning: Could not generate comparison plot: {e}")
+            fig = None
+
+    print(f"CPM filtering: {len(df_before)} -> {len(df_after)} peptides retained")
+    
+    return df_after, fig
+
+def filter_by_CPM_v2_style(
+        df: pd.DataFrame,
+        conditions: dict,
+        threshold_count: int | None = None,
+        threshold_cpm: float | None = None,
+        output_path: str | None = None,
+        plot: bool = False
+) -> tuple[pd.DataFrame, Any | None]:
+    """
+    Filters peptides using version-2 logic (global Experiment Count + CPM_Exp),
+    but follows the structure and defensive programming style of version 1.
+
+    Parameters
+    ----------
+    df : pd.DataFrame
+        Peptide-level count matrix.
+    conditions : dict
+        {column_name: "Control" | "Experiment"} mapping.
+    threshold_count : int, optional
+        Minimum aggregate Experiment Count required (version-2 `threshold_1`).
+    threshold_cpm : float, optional
+        Minimum aggregate CPM_Exp required (version-2 `threshold_2`).
+    output_path : str, optional
+        CSV destination for the filtered table.  If None, nothing is saved.
+    plot : bool, default False
+        Whether to return a before/after histogram figure.
+
+    Returns
+    -------
+    (filtered_df, figure_or_None)
+    """
+
+    # ─────────────────────────── 1. Input validation ──────────────────────────
+    if df.empty:
+        print("Warning: input DataFrame is empty.")
+        return df.copy(), None
+
+    if threshold_count is not None and threshold_count < 0:
+        raise ValueError("`threshold_count` must be non-negative.")
+
+    if threshold_cpm is not None and threshold_cpm < 0:
+        raise ValueError("`threshold_cpm` must be non-negative.")
+
+    # ─────────────────────── 2. Column set-up via `conditions` ───────────────
+    ctrl_cols = [c for c, v in conditions.items() if v == "Control"   and c in df.columns]
+    exp_cols  = [c for c, v in conditions.items() if v == "Experiment" and c in df.columns]
+
+    if not ctrl_cols or not exp_cols:
+        raise ValueError("No valid control or experiment columns identified.")
+
+    # ─────────────── 3. Aggregate counts & CPM (version-2 logic) ─────────────
+    df_work = df.copy()                       # do **not** mutate caller’s df
+    df_work["Control Count"]    = df_work[ctrl_cols].sum(axis=1)
+    df_work["Experiment Count"] = df_work[exp_cols].sum(axis=1)
+
+    total_ctrl = df_work["Control Count"].sum()
+    total_exp  = df_work["Experiment Count"].sum()
+
+    df_work["CPM_Control"] = (df_work["Control Count"]    / total_ctrl * 1e6) if total_ctrl else 0
+    df_work["CPM_Exp"]     = (df_work["Experiment Count"] / total_exp  * 1e6) if total_exp  else 0
+
+    # ───────────────────── 4. Store “before” snapshot for plots ──────────────
+    df_before = df_work.copy()
+
+    # ────────────────────────── 5. Apply dual thresholds ─────────────────────
+    mask = pd.Series(True, index=df_work.index)
+    if threshold_count is not None:
+        mask &= df_work["Experiment Count"] > threshold_count
+    if threshold_cpm   is not None:
+        mask &= df_work["CPM_Exp"]         > threshold_cpm
+
+    df_after = df_work.loc[mask].copy()
+    df_after.reset_index(drop=True, inplace=True)
+
+    # ──────────────────────── 6. Optional peptide cleaning ───────────────────
+    if "Clean Peptide" in df_after.columns:
+        # substitute stop codon (*) with Q, preserving other chars
+        df_after["Clean Peptide"] = df_after["Clean Peptide"].str.replace(r"\*", "Q", regex=True)
+
+    # ──────────────────────── 7. Optional disk output ────────────────────────
+    if output_path:
+        os.makedirs(os.path.dirname(output_path), exist_ok=True)
+        df_after.to_csv(output_path, index=False)
+
+    # ───────────────────────── 8. Optional plotting ──────────────────────────
+    fig = None
+    if plot and not df_before.empty and not df_after.empty:
+        try:
+            fig = plot_histograms(df_before, df_after)   # ← your helper
+        except Exception as e:
+            print(f"Warning: could not generate histogram: {e}")
+
+    # ───────────────────────────── 9. Reporting ──────────────────────────────
+    print(f"Global-CPM filtering: {len(df_before)} → {len(df_after)} peptides retained")
+
+    return df_after, fig
 
 def draw_correlation_matrix(df: pd.DataFrame) -> plt.Figure:
     """
@@ -166,28 +440,100 @@ def draw_correlation_matrix(df: pd.DataFrame) -> plt.Figure:
 
 
 
-def prepare_data(df:pd.DataFrame, columns_condition:dict):
+def prepare_data(df: pd.DataFrame, columns_condition: dict):
     """
-    Prepares count and metadata dataframes for DESeq2 analysis. Use as the input dataframe the output of the filter_by_CPM function.
+    Prepares count and metadata dataframes for DESeq2 analysis.
     
     Parameters:
-    df (pd.DataFrame): The input dataframe containing peptide sequences and expression values.
+    -----------
+    df : pd.DataFrame
+        Input dataframe containing peptide sequences and expression values (output of filter_by_CPM)
+    columns_condition : dict
+        Dictionary mapping column names to condition labels (Control/Experiment)
     
     Returns:
-    tuple: (count_data, meta_data) where count_data contains expression values and meta_data contains sample conditions.
+    --------
+    tuple: (count_data, meta_data) 
+        count_data: DataFrame with peptides as rows, samples as columns
+        meta_data: DataFrame with sample metadata
     """
-    DE_df = df[["Clean Peptide"] + 
-                          [col for col in df.columns if columns_condition.get(col) in ["Control", "Experiment"]]].copy()
+    
+    # Input validation
+    if df.empty:
+        raise ValueError("Input DataFrame is empty")
+    
+    if "Clean Peptide" not in df.columns:
+        raise ValueError("DataFrame must contain 'Clean Peptide' column")
+    
+    if not columns_condition:
+        raise ValueError("columns_condition dictionary cannot be empty")
+    
+    # Validate that requested columns exist in the dataframe
+    available_condition_cols = [col for col in df.columns if columns_condition.get(col) in ["Control", "Experiment"]]
+    
+    if not available_condition_cols:
+        raise ValueError("No valid condition columns found in DataFrame")
+    
+    # Create working dataframe with only needed columns
+    DE_df = df[["Clean Peptide"] + available_condition_cols].copy()
+    
+    # Check for duplicate peptides
+    if DE_df["Clean Peptide"].duplicated().any():
+        print("Warning: Duplicate peptides found. Aggregating by sum.")
+        DE_df = DE_df.groupby("Clean Peptide", as_index=False).sum(numeric_only=True)
+    
     # Set 'Clean Peptide' as index for proper alignment
     DE_df.set_index("Clean Peptide", inplace=True)
-
-    count_data = DE_df[columns_condition.keys()].copy()
-
-
-    meta_data = pd.DataFrame({"condition": columns_condition.values()},
-                             index=count_data.columns)
-    meta_data["condition"] = pd.Categorical(meta_data["condition"], categories=["Control", "Experiment"], ordered=False)
-    assert count_data.columns.tolist() == meta_data.index.tolist(), "Indices of count_data and meta_data do not match!"
+    
+    # Remove peptides with all zero counts
+    row_sums = DE_df.sum(axis=1)
+    zero_rows = row_sums == 0
+    if zero_rows.any():
+        n_zero = zero_rows.sum()
+        print(f"Warning: Removing {n_zero} peptides with zero counts across all samples")
+        DE_df = DE_df[~zero_rows]
+    
+    if DE_df.empty:
+        raise ValueError("No peptides with non-zero counts remain after filtering")
+    
+    # Create count data - only include columns that exist in both dataframe and conditions
+    valid_columns = [col for col in available_condition_cols if col in DE_df.columns]
+    count_data = DE_df[valid_columns].copy()
+    
+    # Ensure all values are non-negative integers
+    if (count_data < 0).any().any():
+        print("Warning: Negative values found in count data. Converting to absolute values.")
+        count_data = count_data.abs()
+    
+    # Convert to integer type for DESeq2
+    count_data = count_data.round().astype(int)
+    
+    # Create metadata dataframe
+    meta_data = pd.DataFrame({
+        "condition": [columns_condition[col] for col in valid_columns]
+    }, index=valid_columns)
+    
+    # Convert condition to categorical for proper DESeq2 handling
+    meta_data["condition"] = pd.Categorical(
+        meta_data["condition"], 
+        categories=["Control", "Experiment"], 
+        ordered=False
+    )
+    
+    # Final validation
+    if count_data.columns.tolist() != meta_data.index.tolist():
+        raise ValueError("Count data columns and metadata indices do not match!")
+    
+    # Check for sufficient samples in each condition
+    condition_counts = meta_data["condition"].value_counts()
+    for condition, count in condition_counts.items():
+        if count < 2:
+            print(f"Warning: Only {count} sample(s) in {condition} condition. "
+                  "DESeq2 may have issues with statistical testing.")
+    
+    print(f"Prepared data: {len(count_data)} peptides × {len(count_data.columns)} samples")
+    print(f"Conditions: {dict(condition_counts)}")
+    
     return count_data, meta_data
 
 def run_deseq2(
@@ -225,7 +571,6 @@ def run_deseq2(
         counts=counts,
         metadata=meta,
         design=f"~{factor}",
-
         n_cpus=1
     )
     dds.deseq2()  # size factors, dispersion, fit GLM
@@ -288,13 +633,13 @@ def run_vst(
         n_cpus=1,
         quiet=True
     )
-    dds.deseq2()
+    dds.fit_size_factors()
 
     # 3) Extract numeric size factors from .obsm
     #    (an array of length n_samples)
-    if "size_factors" not in dds.obsm:
-        raise KeyError("Expected 'size_factors' in dds.obsm but not found.")
-    sf_array = np.asarray(dds.obsm["size_factors"])
+    if "size_factors" not in dds.obs:
+        raise KeyError("Expected 'size_factors' in dds.obs but not found.")
+    sf_array = np.asarray(dds.obs["size_factors"])
     sf = pd.Series(sf_array, index=counts.index, name="size_factor")
 
     # 4) Divide and log2-transform
@@ -437,11 +782,25 @@ def volcano_plot(
     ax.axhline(-np.log10(significance_threshold), color="black", linestyle="--", linewidth=1)
 
     # 7) Annotate top up-regulated points
-    mask = (
+    mask_up = (
         (df["log2FoldChange"] >  log2fc_threshold) &
         (df["neg_log10_padj"]   > -np.log10(significance_threshold * annotate_threshold))
     )
-    for idx, row in df.loc[mask].iterrows():
+    for idx, row in df.loc[mask_up].iterrows():
+        ax.text(
+            row["log2FoldChange"],
+            row["neg_log10_padj"] + 0.1,
+            str(idx),
+            fontsize=8,
+            ha="center"
+        )
+    
+    # 8) Annotate top down-regulated points
+    mask_down = (
+        (df["log2FoldChange"] < -log2fc_threshold) &
+        (df["neg_log10_padj"]   > -np.log10(significance_threshold * annotate_threshold))
+    )
+    for idx, row in df.loc[mask_down].iterrows():
         ax.text(
             row["log2FoldChange"],
             row["neg_log10_padj"] + 0.1,
@@ -450,7 +809,7 @@ def volcano_plot(
             ha="center"
         )
 
-    # 8) Legend and labels
+    # 9) Legend and labels
     legend_elems = [
         Patch(facecolor="grey", label="Not significant"),
         Patch(facecolor="red",  label=f"Up (|FC|>{log2fc_threshold}, FDR>{significance_threshold})"),
@@ -464,7 +823,7 @@ def volcano_plot(
     ax.grid(True, linestyle="--", alpha=0.5)
     plt.tight_layout()
 
-    # 9) Save if requested
+    # 10) Save if requested
     if output_path:
         fig.savefig(output_path, dpi=300)
 
@@ -491,84 +850,6 @@ def to_fasta(peptides: pd.DataFrame, output_file: str = "peptides.fasta") -> str
             f.write(f">peptide_{i}\n{row['variable_pep']}\n")
     return output_file
 
-def gibbs_cluster(input_file,motif_length,num_clusters, output_dir, run_name, logos=True):
-
-    """
-    Runs GibbsClustering on a given peptide sequence input file.
-
-    Parameters:
-    input_file (str): Path to the input FASTA file containing peptide sequences.
-    output_dir (str): Directory where GibbsCluster output will be saved.
-    num_clusters (int): Number of clusters to generate.
-    run_name (str): Name for the GibbsCluster run.
-
-    Returns:
-    str: The path of the clustering files.
-    """
-    def get_session_id(log_string):
-
-        """
-        Extracts the session ID from the GibbsCluster log output.
-
-        Parameters:
-        log_string (str): The standard output from GibbsCluster execution.
-
-        Returns:
-        str or None: Extracted session ID if found, otherwise None.
-        """
-        
-        match = re.search(r"#Session ID:\s*(\d+)", log_string)
-        return match.group(1) if match else None
-    
-    # save the input file as a fasta file
-    if isinstance(input_file, pd.DataFrame):
-        input_file = to_fasta(input_file, os.path.join(output_dir, "input_peptides.fasta"))
-            
-    # Ensure the output directory exists
-    os.makedirs(output_dir, exist_ok=True)
-
-    input_file_dir = os.path.abspath(input_file)
-    print(f"Input file for GibbsCluster: {input_file_dir}")
-
-    
-    command = [
-        GIBS_CLUSTER_BIN,
-        "-f", input_file_dir,
-        "-R", output_dir,
-        "-P", run_name, 
-        "-g", str(num_clusters),
-        "-l", str(motif_length),
-        "-s8", 
-        "-b0.8",
-        "-q0",
-        "-T",
-        "-j2",
-        "-S10",
-        "-c0",
-        "-z0",
-
-    ]
-    
-    try:
-        res = subprocess.run(command, check=True, text=True, capture_output=True)
-        print(f"GibbsCluster run '{run_name}' completed successfully.")
-        out_path = output_dir+"/" + run_name + "_" + get_session_id(res.stdout)
-        print(f"Find the results in :{ out_path}")
-        if logos:
-            os.makedirs(os.path.join(out_path,"logos"), exist_ok=True)
-            for i in range(1, int(num_clusters) + 1):  
-                cluster_file = os.path.join(out_path,"cores", f"gibbs.{i}of{num_clusters}.core")  # Adjust filename based on GibbsCluster output
-                output_image = os.path.join(out_path,"logos", f"cluster_{i}.pdf")
-                print(cluster_file)
-                if os.path.exists(cluster_file):  # Ensure the file exists
-                    generate_weblogo(cluster_file, output_image, f"cluster {i}")
-                    print(f"Generated WebLogo for Cluster {i}: {output_image}")
-        else:
-            print(f"Cluster file {cluster_file} not found.")
-        return out_path
-    except subprocess.CalledProcessError as e:
-        print(f"Error running GibbsCluster: {e.stderr}")
-        return None
 
 def parse_gibbscluster_output(dir,num_clusters):
     """
@@ -596,20 +877,35 @@ def merge_data(cluster_df: pd.DataFrame, value_df: pd.DataFrame, value_col) -> p
     Parameters:
         cluster_df (pd.DataFrame): DataFrame containing peptide sequences and cluster assignments.
         value_df (pd.DataFrame): DataFrame containing peptide sequences and corresponding values.
-        value_col (str): The name of the column in value_df to merge on.
+        value_col (str or list): The name of the column(s) in value_df to merge on.
     
     Returns:
         pd.DataFrame: Merged DataFrame including the specified value column.
     """
-    if type(value_col) == str:
+    if isinstance(value_col, str):
         value_col = [value_col]
+    
+    # Validate that all requested columns exist
+    missing_cols = [col for col in value_col if col not in value_df.columns]
+    if missing_cols:
+        raise ValueError(f"Columns not found in value_df: {missing_cols}")
+    
+    # Create subset with proper column selection
+    value_subset = value_df[["Clean Peptide"] + value_col].rename(columns={"Clean Peptide": "Sequence"})
+    
+    # Perform merge with validation
+    result = pd.merge(cluster_df, value_subset, on="Sequence", how="left")
+    
+    # Check for unmatched sequences
+    unmatched = result["Sequence"][result[value_col[0]].isna()]
+    if len(unmatched) > 0:
+        print(f"Warning: {len(unmatched)} sequences from cluster_df not found in value_df")
+    
+    return result
 
-    value_df = value_df[["Clean Peptide"] + [value_col]].rename(columns={"Clean Peptide": "Sequence"})
-    return pd.merge(cluster_df, value_df, on="Sequence")
-
-def box_plot(df: pd.DataFrame, x_col: str, y_col: str, title: str, output_dir: str = "") -> None:
+def box_plot(df: pd.DataFrame, x_col: str, y_col: str, title: str, output_dir: str = "") -> plt.Figure:
     """
-    Creates a boxplot with a strip plot overlay.
+    Creates a boxplot with a strip plot overlay and returns the figure.
     
     Parameters:
         df (pd.DataFrame): DataFrame containing data to plot.
@@ -617,22 +913,65 @@ def box_plot(df: pd.DataFrame, x_col: str, y_col: str, title: str, output_dir: s
         y_col (str): Column name for the y-axis.
         title (str): Title of the plot.
         output_dir (str, optional): Directory path to save the plot. Defaults to "" (no saving).
+        
+    Returns:
+        plt.Figure: The matplotlib figure object
     """
-    plt.figure(figsize=(8, 6))
-    sns.boxplot(x=x_col, y=y_col, data=df, showfliers=False, palette="Set2",
-                boxprops=dict(facecolor="none", edgecolor="black"),
-                whiskerprops=dict(color="black"), medianprops=dict(color="red"))
-    sns.stripplot(x=x_col, y=y_col, data=df, color="blue", size=2, alpha=0.5, jitter=True)
     
-    plt.xlabel("Cluster")
-    plt.ylabel(y_col)
-    plt.title(title)
-    plt.xticks(rotation=45)
-    plt.grid(axis="y", linestyle="--", alpha=0.7)
+    # Input validation
+    if df.empty:
+        fig, ax = plt.subplots(figsize=(8, 6))
+        ax.text(0.5, 0.5, "No data to plot", ha='center', va='center', transform=ax.transAxes)
+        ax.set_title(title)
+        return fig
+    
+    if x_col not in df.columns:
+        raise ValueError(f"Column '{x_col}' not found in DataFrame")
+    if y_col not in df.columns:
+        raise ValueError(f"Column '{y_col}' not found in DataFrame")
+    
+    # Remove rows with NaN values in plotting columns
+    plot_df = df[[x_col, y_col]].dropna()
+    
+    if plot_df.empty:
+        fig, ax = plt.subplots(figsize=(8, 6))
+        ax.text(0.5, 0.5, f"No valid data for columns {x_col}, {y_col}", 
+                ha='center', va='center', transform=ax.transAxes)
+        ax.set_title(title)
+        return fig
+    
+    fig, ax = plt.subplots(figsize=(8, 6))
+    
+    try:
+        # Create boxplot
+        sns.boxplot(x=x_col, y=y_col, data=plot_df, showfliers=False, palette="Set2",
+                    boxprops=dict(facecolor="none", edgecolor="black"),
+                    whiskerprops=dict(color="black"), medianprops=dict(color="red"), ax=ax)
+        
+        # Add strip plot overlay
+        sns.stripplot(x=x_col, y=y_col, data=plot_df, color="blue", size=2, alpha=0.5, jitter=True, ax=ax)
+        
+    except Exception as e:
+        ax.text(0.5, 0.5, f"Error creating plot: {str(e)}", 
+                ha='center', va='center', transform=ax.transAxes)
+        ax.set_title(title)
+        return fig
+    
+    ax.set_xlabel("Cluster")
+    ax.set_ylabel(y_col)
+    ax.set_title(title)
+    plt.setp(ax.get_xticklabels(), rotation=45)
+    ax.grid(axis="y", linestyle="--", alpha=0.7)
+    
+    plt.tight_layout()
     
     if output_dir:
-        plt.savefig(output_dir)
-    plt.show()
+        try:
+            fig.savefig(output_dir, dpi=300, bbox_inches='tight')
+        except Exception as e:
+            print(f"Warning: Could not save plot to {output_dir}: {e}")
+    
+    return fig
 
 
 # Function to remove constant positions (keep only variable positions)
@@ -668,8 +1007,8 @@ def constant_positions(pattern: str):
     will raise a ValueError.
     """
     token_re = re.compile(r"""
-        (\\.|\.|[A-Za-z0-9])   # either escaped char (\x), dot, or alphanumeric
-        (?:\{(\d+)\})?         # optional fixed-quantifier {n}
+    (\\\.|\\.|\.|\[(?:\\.|[^\]\\])+\]|[A-Za-z0-9])  # add character class token
+    (?:\{(\d+)\})?
     """, re.VERBOSE)
 
     idx = 0
@@ -682,16 +1021,14 @@ def constant_positions(pattern: str):
         token, quant = m.group(1), m.group(2)
         count = int(quant) if quant is not None else 1
 
-        # Is this a literal?
         if token.startswith("\\"):
-            # escaped literal
             for i in range(count):
                 const_pos.append(idx + i)
         elif token == ".":
-            # wildcard: skip
-            pass
+            pass  # wildcard: variable
+        elif token.startswith("["):
+            pass  # character class: variable width 1, not constant
         else:
-            # plain literal A–Z or 0–9
             for i in range(count):
                 const_pos.append(idx + i)
 
