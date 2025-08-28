@@ -1007,8 +1007,8 @@ def constant_positions(pattern: str):
     will raise a ValueError.
     """
     token_re = re.compile(r"""
-        (\\.|\.|[A-Za-z0-9])   # either escaped char (\x), dot, or alphanumeric
-        (?:\{(\d+)\})?         # optional fixed-quantifier {n}
+    (\\\.|\\.|\.|\[(?:\\.|[^\]\\])+\]|[A-Za-z0-9])  # add character class token
+    (?:\{(\d+)\})?
     """, re.VERBOSE)
 
     idx = 0
@@ -1021,16 +1021,14 @@ def constant_positions(pattern: str):
         token, quant = m.group(1), m.group(2)
         count = int(quant) if quant is not None else 1
 
-        # Is this a literal?
         if token.startswith("\\"):
-            # escaped literal
             for i in range(count):
                 const_pos.append(idx + i)
         elif token == ".":
-            # wildcard: skip
-            pass
+            pass  # wildcard: variable
+        elif token.startswith("["):
+            pass  # character class: variable width 1, not constant
         else:
-            # plain literal A–Z or 0–9
             for i in range(count):
                 const_pos.append(idx + i)
 
