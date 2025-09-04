@@ -332,7 +332,7 @@ with col1:
                     </div>
                     """, unsafe_allow_html=True)
                 
-                st.dataframe(data.head(10), use_container_width=True)
+                st.dataframe(data.head(10), width='stretch')
                 
         except Exception as e:
             st.error(f"Error loading file: {e}")
@@ -555,7 +555,7 @@ if 'data' in st.session_state:
         if st.button(
             "🚀 Run Analysis", 
             disabled=not analysis_allowed,
-            use_container_width=True,
+            width='stretch',
             type="primary"
         ):
             st.session_state['parameters_set'] = True
@@ -874,7 +874,7 @@ if st.session_state.analysis_complete and 'analysis_results' in st.session_state
         summary_data.columns = ['Count']
         # Ensure consistent data types for Arrow serialization
         summary_data['Count'] = summary_data['Count'].astype(str)
-        st.dataframe(summary_data, use_container_width=True)
+        st.dataframe(summary_data, width='stretch')
     
     with tab3:
         if not results['clusters_df'].empty:
@@ -930,7 +930,7 @@ if st.session_state.analysis_complete and 'analysis_results' in st.session_state
                     
                     if metrics_data:
                         metrics_df = pd.DataFrame(metrics_data)
-                        st.dataframe(metrics_df, use_container_width=True, hide_index=True)
+                        st.dataframe(metrics_df, width='stretch', hide_index=True)
                 
                 # Quality interpretation with more detail
                 st.subheader("🎯 Quality Assessment")
@@ -1099,7 +1099,7 @@ if st.session_state.analysis_complete and 'analysis_results' in st.session_state
             for col in cluster_display_df.columns:
                 if cluster_display_df[col].dtype == 'object':
                     cluster_display_df[col] = cluster_display_df[col].astype(str)
-            st.dataframe(cluster_display_df, use_container_width=True)
+            st.dataframe(cluster_display_df, width='stretch')
         else:
             st.warning("No upregulated peptides found for clustering analysis.")
     
@@ -1117,7 +1117,7 @@ if st.session_state.analysis_complete and 'analysis_results' in st.session_state
             ["Validation", "Enabled" if params['use_consensus_validation'] else "Disabled"],
             ["Motif Length", str(params['motif_length'])]
         ], columns=['Parameter', 'Value'])
-        st.dataframe(param_df, use_container_width=True)
+        st.dataframe(param_df, width='stretch')
         
         # Download options
         st.subheader("💾 Download Results")

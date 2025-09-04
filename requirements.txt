@@ -12,6 +12,7 @@ scipy>=1.9.0
 # Bioinformatics and sequence analysis
 logomaker>=0.8
 biopython>=1.79
+pydeseq2=0.5.2
 
 # Data visualization
 plotly>=5.0.0
