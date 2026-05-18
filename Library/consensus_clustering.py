@@ -243,38 +243,53 @@ class ConsensusClusteringValidator:
     
     def calculate_stability_scores(self, consensus_matrices: Dict[int, np.ndarray]) -> Dict[int, float]:
         """
-        Calculate stability scores for each k based on consensus matrices
-        
+        Calculate stability scores for each k based on consensus matrices.
+
+        Follows Monti et al. (2003): computes A(k), the area under the empirical
+        CDF of the consensus matrix upper triangle, then returns delta-AUC =
+        A(k) - A(k-1) as the stability score for k > k_min.  A large delta
+        indicates a meaningful gain in cluster stability when adding the k-th
+        cluster; the elbow in the delta curve identifies the optimal k.
+
+        For the smallest k in the range, the raw A(k) is returned (no prior k
+        to compare against).
+
         Parameters:
         -----------
         consensus_matrices : Dict[int, np.ndarray]
             Consensus matrices for different k values
-            
+
         Returns:
         --------
-        Dict[int, float] : Stability scores for each k
+        Dict[int, float] : Delta-AUC stability scores for each k
         """
-        stability_scores = {}
-        
+        raw_aucs: Dict[int, float] = {}
+
         for k, consensus_matrix in consensus_matrices.items():
-            # Calculate area under CDF of consensus values
             consensus_values = consensus_matrix[np.triu_indices_from(consensus_matrix, k=1)]
             consensus_values = consensus_values[~np.isnan(consensus_values)]
-            
+
             if len(consensus_values) == 0:
-                stability_scores[k] = 0.0
+                raw_aucs[k] = 0.0
                 continue
-            
-            # Calculate cumulative distribution
+
+            # Empirical CDF evaluated at 100 uniform points in [0, 1]
             sorted_values = np.sort(consensus_values)
             n_values = len(sorted_values)
             cdf_x = np.linspace(0, 1, 100)
-            cdf_y = np.searchsorted(sorted_values, cdf_x * np.max(sorted_values)) / n_values
-            
-            # Area under CDF (stability score)
-            stability_score = np.trapz(cdf_y, cdf_x)
-            stability_scores[k] = stability_score
-            
+            cdf_y = np.searchsorted(sorted_values, cdf_x) / n_values
+            raw_aucs[k] = float(np.trapz(cdf_y, cdf_x))
+
+        # Delta-AUC (Monti et al. k-selection criterion)
+        stability_scores: Dict[int, float] = {}
+        sorted_ks = sorted(raw_aucs.keys())
+        for i, k in enumerate(sorted_ks):
+            if i == 0:
+                stability_scores[k] = raw_aucs[k]
+            else:
+                prev_k = sorted_ks[i - 1]
+                stability_scores[k] = raw_aucs[k] - raw_aucs[prev_k]
+
         self.stability_scores = stability_scores
         return stability_scores
     

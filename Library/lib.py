@@ -404,7 +404,9 @@ def filter_by_CPM_v2_style(
 
     # ──────────────────────── 7. Optional disk output ────────────────────────
     if output_path:
-        os.makedirs(os.path.dirname(output_path), exist_ok=True)
+        dir_name = os.path.dirname(output_path)
+        if dir_name:
+            os.makedirs(dir_name, exist_ok=True)
         df_after.to_csv(output_path, index=False)
 
     # ───────────────────────── 8. Optional plotting ──────────────────────────
@@ -560,7 +562,6 @@ def run_deseq2(
     res_df : pd.DataFrame
         Indexed by peptide, with columns ['baseMean','log2FoldChange','pvalue','padj',...]
     """
-# WARNInin: aqui creo que no esta comparando bien las cosas (Tiene que comparar por columnas)
     # 1) align metadata to samples
     meta = meta_data.reindex(count_data.columns)
     # 2) transpose for PyDESeq2
@@ -635,7 +636,7 @@ def run_vst(
     )
     dds.fit_size_factors()
 
-    # 3) Extract numeric size factors from .obsm
+    # 3) Extract numeric size factors from dds.obs
     #    (an array of length n_samples)
     if "size_factors" not in dds.obs:
         raise KeyError("Expected 'size_factors' in dds.obs but not found.")
@@ -670,6 +671,7 @@ def significant_DE_peptides(df:pd.DataFrame, significance_threshold:float = 0.05
     """
 
 
+    df = df.copy()
     df["padj"] = df["padj"].astype(float)
     df["log2FoldChange"] = df["log2FoldChange"].astype(float)
     df["-log10(padj)"] = -np.log10(df["padj"] + 1e-10)
@@ -812,8 +814,8 @@ def volcano_plot(
     # 9) Legend and labels
     legend_elems = [
         Patch(facecolor="grey", label="Not significant"),
-        Patch(facecolor="red",  label=f"Up (|FC|>{log2fc_threshold}, FDR>{significance_threshold})"),
-        Patch(facecolor="blue", label=f"Down (|FC|<{log2fc_threshold}, FDR>{significance_threshold})"),
+        Patch(facecolor="red",  label=f"Up (|FC|>{log2fc_threshold}, FDR<{significance_threshold})"),
+        Patch(facecolor="blue", label=f"Down (|FC|<{log2fc_threshold}, FDR<{significance_threshold})"),
     ]
     ax.legend(handles=legend_elems, loc="upper left", frameon=True)
 
@@ -834,40 +836,49 @@ def generate_weblogo(input_fasta, output_pdf, title):
     command = f"weblogo -f {input_fasta} -o {output_pdf} --title '{title}' --format pdf --errorbars NO --fineprint ''"
     subprocess.run(command, shell=True)
 
-def to_fasta(peptides: pd.DataFrame, output_file: str = "peptides.fasta") -> str:
+def to_fasta(peptides: pd.DataFrame, output_file: str = "peptides.fasta",
+             seq_col: str = "variable_pep") -> str:
     """
     Converts a DataFrame of peptides into a FASTA file format.
 
     Parameters:
     peptides (pd.DataFrame): DataFrame containing peptide sequences.
     output_file (str): Path to the output FASTA file.
+    seq_col (str): Column name containing the sequences.
 
     Returns:
     str: Path to the generated FASTA file.
     """
+    if seq_col not in peptides.columns:
+        raise ValueError(f"Column '{seq_col}' not found in DataFrame. "
+                         f"Available columns: {list(peptides.columns)}")
     with open(output_file, "w") as f:
         for i, row in peptides.iterrows():
-            f.write(f">peptide_{i}\n{row['variable_pep']}\n")
+            f.write(f">peptide_{i}\n{row[seq_col]}\n")
     return output_file
 
 
-def parse_gibbscluster_output(dir,num_clusters):
+def parse_gibbscluster_output(results_dir, num_clusters):
     """
     Parses the GibbsCluster output file to extract peptide sequences for each cluster.
 
     Parameters:
-    file_path (str): Path to the GibbsCluster output file.
+    results_dir (str): Path to the GibbsCluster results directory.
+    num_clusters (int): Number of clusters to parse.
 
     Returns:
-    dict: Dictionary with clusters as keys and lists of peptides as values.
+    pd.DataFrame: DataFrame with cluster assignments and peptide sequences.
     """
-    # Read the file, skipping the header row
-
-
-    df = pd.read_csv(CURRENT_DIR+"/"+ dir +f"/res/gibbs.{num_clusters}g.ds.out", delim_whitespace=True, header=None, skiprows=1, 
-                     names=["G", "Gn", "Num", "Sequence", "Core", "o", "of", "ip", "IP", "il", "IL", "dp", "DP", "dl", "DL", 
-                            "Annotation", "sS", "Self", "bgG", "bgG_Val", "bgS", "bgS_Val", "cS", "cScore"])
-    df["Gn"]= df["Gn"] + 1
+    file_path = os.path.join(CURRENT_DIR, results_dir, f"res/gibbs.{num_clusters}g.ds.out")
+    df = pd.read_csv(
+        file_path,
+        sep=r'\s+',
+        header=None,
+        skiprows=1,
+        names=["G", "Gn", "Num", "Sequence", "Core", "o", "of", "ip", "IP", "il", "IL", "dp", "DP", "dl", "DL",
+               "Annotation", "sS", "Self", "bgG", "bgG_Val", "bgS", "bgS_Val", "cS", "cScore"]
+    )
+    df["Gn"] = df["Gn"] + 1
     return df
 
 def merge_data(cluster_df: pd.DataFrame, value_df: pd.DataFrame, value_col) -> pd.DataFrame:

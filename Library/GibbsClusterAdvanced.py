@@ -46,13 +46,14 @@ class GibbsClusterAdvanced:
                0.025, 0.045, 0.049, 0.040, 0.052, 0.057, 0.051, 0.013, 0.032, 0.073]
     }
     
-    def __init__(self, 
+    def __init__(self,
                  motif_length: int = 9,
                  num_clusters: Union[int, Tuple[int, int]] = 4,
                  max_insertion_length: int = 0,
                  max_deletion_length: int = 0,
                  iterations: int = 10,
                  temperature_start: float = 1.5,
+                 temperature_end: float = 0.1,
                  temperature_steps: int = 20,
                  num_seeds: int = 1,
                  lambda_penalty: float = 0.8,
@@ -68,6 +69,7 @@ class GibbsClusterAdvanced:
                  phase_shift_interval: int = 100,
                  indel_move_interval: int = 10,
                  weight_low_count: int = 200,
+                 pwm_alpha: float = 1.0,
                  seed: Optional[int] = None):
         
         self.motif_length = motif_length
@@ -80,6 +82,7 @@ class GibbsClusterAdvanced:
         self.max_deletion_length = max_deletion_length
         self.iterations = iterations
         self.temperature_start = temperature_start
+        self.temperature_end = temperature_end
         self.temperature_steps = temperature_steps
         self.num_seeds = num_seeds
         self.lambda_penalty = lambda_penalty
@@ -95,7 +98,8 @@ class GibbsClusterAdvanced:
         self.phase_shift_interval = phase_shift_interval
         self.indel_move_interval = indel_move_interval
         self.weight_low_count = weight_low_count
-        
+        self.pwm_alpha = pwm_alpha
+
         if seed is not None:
             random.seed(seed)
             np.random.seed(seed)
@@ -121,36 +125,31 @@ class GibbsClusterAdvanced:
             encoded.append(seq_encoded)
         return np.array(encoded)
     
-    def _calculate_kld(self, counts: np.ndarray, background: np.ndarray, 
+    def _calculate_kld(self, counts: np.ndarray, background: np.ndarray,
                       cluster_sizes: np.ndarray) -> Tuple[float, np.ndarray]:
-        """Calculate Kullback-Leibler divergence"""
+        """Calculate Kullback-Leibler divergence using pseudocounts consistent with the sampler."""
         num_clusters, motif_len, num_aa = counts.shape
         cluster_klds = np.zeros(num_clusters)
-        
+        safe_bg = np.maximum(background, 1e-10)
+
         for k in range(num_clusters):
             if cluster_sizes[k] == 0:
                 continue
-                
+
+            # Total denominator: cluster size + sum(background) = cluster_size + 1.0
+            # (matches the sampler: prob = (count + bg[aa]) / (N_k + 1.0))
+            total = cluster_sizes[k] + 1.0
             kld_sum = 0.0
             for pos in range(motif_len):
-                # Calculate frequencies
-                freqs = counts[k, pos, :] / cluster_sizes[k]
-                freqs = np.maximum(freqs, 1e-10)  # Avoid log(0)
-                
-                # KLD calculation
-                for aa in range(num_aa):
-                    if freqs[aa] > 0:
-                        kld_sum += freqs[aa] * math.log(freqs[aa] / background[aa])
-            
+                freqs = (counts[k, pos, :] + background) / total
+                kld_sum += float(np.sum(freqs * np.log(freqs / safe_bg)))
+
             cluster_klds[k] = kld_sum
-        
+
         # Weighted average KLD
         total_seqs = cluster_sizes.sum()
-        if total_seqs > 0:
-            avg_kld = np.sum(cluster_klds * cluster_sizes) / total_seqs
-        else:
-            avg_kld = 0.0
-            
+        avg_kld = float(np.sum(cluster_klds * cluster_sizes) / total_seqs) if total_seqs > 0 else 0.0
+
         return avg_kld, cluster_klds
     
     def _gibbs_sampling_step(self, sequences: np.ndarray, assignments: np.ndarray, 
@@ -185,9 +184,6 @@ class GibbsClusterAdvanced:
                     # Add pseudocounts
                     prob = (aa_count + self.background_freqs[aa]) / (total_count + 1.0)
                     log_prob += math.log(prob)
-                
-                # Apply penalty for inter-cluster similarity (simplified)
-                log_prob -= self.lambda_penalty * k  # Simplified penalty
                 
                 log_probs[k] = log_prob / temperature
             
@@ -232,8 +228,8 @@ class GibbsClusterAdvanced:
         
         # Simulated annealing
         temperature_schedule = np.logspace(
-            math.log10(self.temperature_start), 
-            math.log10(0.1), 
+            math.log10(self.temperature_start),
+            math.log10(self.temperature_end),
             self.temperature_steps
         )
         
@@ -399,16 +395,16 @@ class GibbsClusterAdvanced:
         pwms = []
         for k in range(counts.shape[0]):
             if cluster_sizes[k] > 0:
-                # Add pseudocounts and normalize
-                freqs = counts[k] + 1.0
+                # Add pseudocounts (pwm_alpha) and normalize — consistent with Clustering.py
+                freqs = counts[k] + self.pwm_alpha
                 freqs = freqs / freqs.sum(axis=1, keepdims=True)
-                
+
                 pwm_df = pd.DataFrame(freqs, columns=list(self.AA_ALPHABET))
                 pwms.append(pwm_df)
             else:
-                # Empty cluster
-                pwm_df = pd.DataFrame(np.ones((self.motif_length, 20)) / 20, 
-                                    columns=list(self.AA_ALPHABET))
+                # Empty cluster: uniform distribution
+                pwm_df = pd.DataFrame(np.ones((self.motif_length, 20)) / 20,
+                                      columns=list(self.AA_ALPHABET))
                 pwms.append(pwm_df)
         
         return pwms
@@ -560,11 +556,11 @@ def gibbs_cluster_advanced(
 
 # Example usage and testing
 if __name__ == "__main__":
-    # Test with sample peptides
+    # Test with sample peptides (all standard 20 amino acids only)
     sample_peptides = [
         "ACDEFGHIK", "ACDEFGHIL", "ACDEFGHIM", "ACDEFGHIN",
-        "LMNPQRSTU", "LMNPQRSTV", "LMNPQRSTW", "LMNPQRSTY",
-        "VWXYZABCD", "VWXYZABCE", "VWXYZABCF", "VWXYZABCG"
+        "LMNPQRSTV", "LMNPQRSTW", "LMNPQRSTY", "LMNPQRSTA",
+        "VWYCDEFGH", "VWYCDEFGI", "VWYCDEFGK", "VWYCDEFGL"
     ]
     
     print("Testing Advanced Gibbs Clustering...")
